@@ -18,7 +18,7 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Dumbbell, Users, LogOut, Plus, Trophy, Settings, TrendingUp, ChevronRight } from "lucide-react";
+import { Dumbbell, Users, LogOut, Plus, Trophy, Settings, TrendingUp, ChevronRight, Shield } from "lucide-react";
 import type { User } from "@supabase/supabase-js";
 
 interface UserProfile {
@@ -318,6 +318,15 @@ export default function DashboardPage() {
                   フレンド / リーダーボード
                 </Button>
               </Link>
+
+              {user?.email === "ikkei0713@gmail.com" && (
+                <Link href="/admin" className="block">
+                  <Button variant="secondary" className="w-full h-14 text-base border-primary/30">
+                    <Shield className="w-5 h-5 mr-3 text-primary" />
+                    管理画面
+                  </Button>
+                </Link>
+              )}
             </div>
 
             {/* Week 12 final message */}
