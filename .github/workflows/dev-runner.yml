@@ -5,9 +5,9 @@
 # にコピーして使用してください。
 #
 # 必要なシークレット（リポジトリ Settings > Secrets に設定）：
-#   ANTHROPIC_API_KEY : Claude Code 実行用
+#   OPENAI_API_KEY : OpenAI API キー
 #   DEV_RUNNER_CALLBACK_SECRET : Orchestrator認証用
-#   ORCHESTRATOR_URL : Orchestrator公開URL（ngrok等）
+#   ORCHESTRATOR_URL : Orchestrator公開URL（ngrok等、省略可）
 #
 # ブランチ保護設定（GitHub リポジトリ設定で必ず行うこと）：
 #   - main ブランチへの直接 push を禁止
@@ -24,7 +24,7 @@ on:
         required: true
         type: string
       branch_name:
-        description: "作業ブランチ名 (例: dev-runner/20260303-120000/abc123)"
+        description: "作業ブランチ名"
         required: true
         type: string
       goal:
@@ -46,7 +46,6 @@ on:
         required: true
         type: string
 
-# main への直接 push を禁止（PR のみ許可）
 permissions:
   contents: write
   pull-requests: write
@@ -57,18 +56,14 @@ jobs:
     timeout-minutes: 30
 
     steps:
-      # ─────────────────────────────────────────
       # 1. Checkout
-      # ─────────────────────────────────────────
       - name: Checkout
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
           token: ${{ secrets.GITHUB_TOKEN }}
 
-      # ─────────────────────────────────────────
       # 2. 新ブランチ作成
-      # ─────────────────────────────────────────
       - name: Create branch
         run: |
           git config user.name "dev-runner[bot]"
@@ -76,90 +71,178 @@ jobs:
           git checkout -b "${{ inputs.branch_name }}"
           echo "BRANCH=${{ inputs.branch_name }}" >> $GITHUB_ENV
 
-      # ─────────────────────────────────────────
-      # 3. Node.js セットアップ（Claude Code用）
-      # ─────────────────────────────────────────
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
+      # 3. Python セットアップ
+      - name: Setup Python
+        uses: actions/setup-python@v5
         with:
-          node-version: "20"
+          python-version: "3.12"
 
-      # ─────────────────────────────────────────
-      # 4. Claude Code インストール
-      # ─────────────────────────────────────────
-      - name: Install Claude Code
-        run: npm install -g @anthropic-ai/claude-code
+      - name: Install openai
+        run: pip install openai -q
 
-      # ─────────────────────────────────────────
-      # 5. 実行プロンプト生成
-      # ─────────────────────────────────────────
-      - name: Prepare prompt
-        id: prompt
+      # 4. リポジトリ構造を取得
+      - name: Collect repo context
+        id: context
         run: |
-          GOAL="${{ inputs.goal }}"
-          ACCEPTANCE="${{ inputs.acceptance }}"
-          CONSTRAINTS="${{ inputs.constraints }}"
-          RUN_ID="${{ inputs.run_id }}"
+          echo "=== ファイル一覧 ===" > repo_context.txt
+          find . -type f \
+            ! -path './.git/*' \
+            ! -path './node_modules/*' \
+            ! -path './.next/*' \
+            ! -path './dist/*' \
+            ! -path './__pycache__/*' \
+            ! -path './.venv/*' \
+            ! -name '*.lock' \
+            ! -name 'package-lock.json' \
+            | sort >> repo_context.txt
 
-          PROMPT="あなたはdev-runner（おぷでぶ）です。以下のタスクを実装してください。
+          echo "" >> repo_context.txt
+          echo "=== 主要ファイル内容 ===" >> repo_context.txt
 
-          Run ID: ${RUN_ID}
-          目標: ${GOAL}
-          受け入れ条件: ${ACCEPTANCE:-（未設定）}
-          制約事項: ${CONSTRAINTS:-（なし）}
+          # 主要ファイルの内容を収集（合計上限 60KB）
+          TOTAL=0
+          for f in README.md package.json tsconfig.json pyproject.toml \
+                   src/app/layout.tsx src/app/page.tsx \
+                   $(find src -name '*.ts' -o -name '*.tsx' -o -name '*.py' 2>/dev/null | head -20); do
+            if [ -f "$f" ] && [ "$TOTAL" -lt 60000 ]; then
+              SIZE=$(wc -c < "$f")
+              if [ "$SIZE" -lt 8000 ]; then
+                echo "--- FILE: $f ---" >> repo_context.txt
+                cat "$f" >> repo_context.txt
+                echo "" >> repo_context.txt
+                TOTAL=$((TOTAL + SIZE))
+              fi
+            fi
+          done
+          echo "Context collected: ${TOTAL} bytes"
 
-          実装ルール:
-          - mainブランチへ直接pushしないこと
-          - 現在のブランチ（${BRANCH}）のみで作業すること
-          - 危険なコマンド（rm -rf /, git push --force, DROP TABLE等）は実行しないこと
-          - 変更完了後、変更の概要を日本語で出力すること
-          - テストが存在する場合は実行すること
-
-          実装後、以下の形式でサマリを出力してください:
-          --- SUMMARY START ---
-          [5点以内で変更内容を記載]
-          --- SUMMARY END ---"
-
-          # 改行をエスケープしてGitHub Outputに保存
-          echo "prompt<<PROMPT_EOF" >> $GITHUB_OUTPUT
-          echo "$PROMPT" >> $GITHUB_OUTPUT
-          echo "PROMPT_EOF" >> $GITHUB_OUTPUT
-
-      # ─────────────────────────────────────────
-      # 6. Claude Code 実行
-      # ─────────────────────────────────────────
-      - name: Run Claude Code
-        id: claude
+      # 5. OpenAI で実装
+      - name: Run dev-runner agent (OpenAI)
+        id: agent
         env:
-          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
         run: |
-          claude --print --output-format text "${{ steps.prompt.outputs.prompt }}" > claude_output.txt 2>&1
-          echo "exit_code=$?" >> $GITHUB_OUTPUT
-          cat claude_output.txt
+          python3 << 'AGENTEOF'
+          import os, json, subprocess
+          from openai import OpenAI
+
+          client = OpenAI()
+
+          goal = os.environ.get("GOAL", "")
+          acceptance = os.environ.get("ACCEPTANCE", "")
+          constraints = os.environ.get("CONSTRAINTS", "")
+          run_id = os.environ.get("RUN_ID", "")
+
+          with open("repo_context.txt", "r") as f:
+              context = f.read()
+
+          system_prompt = """あなたは dev-runner（おぷでぶ）。GitHub Actions 上で動作するコード実装エージェントです。
+
+          ルール:
+          - main ブランチへ直接 push しない
+          - rm -rf /, git push --force, DROP TABLE 等の危険コマンドは絶対禁止
+          - 変更は JSON 形式で出力する（後続スクリプトがファイルに書き込む）
+
+          出力フォーマット（必ず JSON のみ出力）:
+          {
+            "files": [
+              {"path": "src/example.ts", "action": "write", "content": "ファイル内容全体"},
+              {"path": "old-file.ts", "action": "delete"}
+            ],
+            "summary": "変更の要約（日本語、5点以内）"
+          }
+
+          action は "write"（作成/上書き）または "delete"（削除）のみ。
+          content にはファイルの完全な内容を入れること（差分ではなく全文）。"""
+
+          user_prompt = f"""以下のリポジトリに対して実装してください。
+
+          ## 目標
+          {goal}
+
+          ## 受け入れ条件
+          {acceptance or '（未設定）'}
+
+          ## 制約
+          {constraints or '（なし）'}
+
+          ## リポジトリ構造と主要ファイル
+          {context[:50000]}
+          """
+
+          print(f"Calling OpenAI API...")
+          print(f"Goal: {goal}")
+
+          try:
+              resp = client.chat.completions.create(
+                  model="gpt-4o",
+                  messages=[
+                      {"role": "system", "content": system_prompt},
+                      {"role": "user", "content": user_prompt},
+                  ],
+                  temperature=0.2,
+                  max_tokens=16000,
+                  response_format={"type": "json_object"},
+              )
+
+              raw = resp.choices[0].message.content
+              print(f"Response received ({len(raw)} chars)")
+
+              result = json.loads(raw)
+              files = result.get("files", [])
+              summary = result.get("summary", "変更なし")
+
+              for f in files:
+                  path = f["path"]
+                  action = f.get("action", "write")
+                  if action == "delete":
+                      if os.path.exists(path):
+                          os.remove(path)
+                          print(f"Deleted: {path}")
+                  else:
+                      os.makedirs(os.path.dirname(path) if os.path.dirname(path) else ".", exist_ok=True)
+                      with open(path, "w") as fh:
+                          fh.write(f["content"])
+                      print(f"Written: {path}")
+
+              print(f"\n--- SUMMARY START ---")
+              print(summary)
+              print(f"--- SUMMARY END ---")
+
+              with open("agent_summary.txt", "w") as sf:
+                  sf.write(summary)
+
+          except Exception as e:
+              print(f"ERROR: {e}")
+              with open("agent_summary.txt", "w") as sf:
+                  sf.write(f"OpenAI API エラー: {e}")
+              exit(1)
+          AGENTEOF
+        env:
+          GOAL: ${{ inputs.goal }}
+          ACCEPTANCE: ${{ inputs.acceptance }}
+          CONSTRAINTS: ${{ inputs.constraints }}
+          RUN_ID: ${{ inputs.run_id }}
         continue-on-error: true
 
-      # ─────────────────────────────────────────
-      # 7. サマリ抽出
-      # ─────────────────────────────────────────
+      # 6. サマリ抽出
       - name: Extract summary
         id: summary
         run: |
-          if grep -q "--- SUMMARY START ---" claude_output.txt 2>/dev/null; then
-            SUMMARY=$(sed -n '/--- SUMMARY START ---/,/--- SUMMARY END ---/p' claude_output.txt \
-              | grep -v "--- SUMMARY" | head -10 | tr '\n' ' ')
+          if [ -f agent_summary.txt ]; then
+            SUMMARY=$(cat agent_summary.txt | head -10 | tr '\n' ' ')
           else
-            SUMMARY="Claude Code 実行完了（サマリ未抽出）"
+            SUMMARY="実行完了（サマリ未取得）"
           fi
           echo "summary=$SUMMARY" >> $GITHUB_OUTPUT
 
-      # ─────────────────────────────────────────
-      # 8. テスト実行
-      # ─────────────────────────────────────────
+      # 7. テスト実行
       - name: Run tests
         id: tests
         run: |
           TEST_RESULT="skipped"
           if [ -f "package.json" ] && grep -q '"test"' package.json; then
+            npm install --legacy-peer-deps 2>/dev/null || true
             npm test --if-present 2>&1 | tee test_output.txt
             TEST_RESULT=$( [ ${PIPESTATUS[0]} -eq 0 ] && echo "passed" || echo "failed" )
           elif [ -f "pytest.ini" ] || [ -f "pyproject.toml" ] || find . -name "test_*.py" | head -1 | grep -q .; then
@@ -170,9 +253,7 @@ jobs:
           echo "result=$TEST_RESULT" >> $GITHUB_OUTPUT
         continue-on-error: true
 
-      # ─────────────────────────────────────────
-      # 9. コミット & プッシュ
-      # ─────────────────────────────────────────
+      # 8. コミット & プッシュ
       - name: Commit and push
         id: commit
         run: |
@@ -185,14 +266,12 @@ jobs:
             git commit -m "feat: ${{ inputs.goal }}
 
             Run ID: ${{ inputs.run_id }}
-            Generated by dev-runner (おぷでぶ)"
+            Generated by dev-runner (おぷでぶ) via OpenAI"
             git push origin "${{ inputs.branch_name }}"
             echo "has_changes=true" >> $GITHUB_OUTPUT
           fi
 
-      # ─────────────────────────────────────────
-      # 10. PR 作成
-      # ─────────────────────────────────────────
+      # 9. PR 作成
       - name: Create PR
         id: pr
         if: steps.commit.outputs.has_changes == 'true'
@@ -204,7 +283,9 @@ jobs:
           GOAL="${{ inputs.goal }}"
           RUN_ID="${{ inputs.run_id }}"
 
-          PR_BODY="## 開発概要
+          PR_URL=$(gh pr create \
+            --title "feat: ${GOAL}" \
+            --body "## 開発概要
           ${GOAL}
 
           ## 変更サマリ
@@ -214,13 +295,8 @@ jobs:
           ${TEST_RESULT}
 
           ---
-          > 🤖 このPRは dev-runner（おぷでぶ）により自動生成されました
-          > Run ID: \`${RUN_ID}\`
-          > Generated by [Claude Code](https://claude.ai/code)"
-
-          PR_URL=$(gh pr create \
-            --title "feat: ${GOAL}" \
-            --body "$PR_BODY" \
+          > dev-runner (おぷでぶ) / OpenAI
+          > Run ID: \`${RUN_ID}\`" \
             --base main \
             --head "${{ inputs.branch_name }}" \
             --label "dev-runner" 2>&1 | tail -1)
@@ -229,9 +305,7 @@ jobs:
           PR_NUMBER=$(echo "$PR_URL" | grep -oE '[0-9]+$')
           echo "pr_number=$PR_NUMBER" >> $GITHUB_OUTPUT
 
-      # ─────────────────────────────────────────
-      # 11. Orchestrator にコールバック
-      # ─────────────────────────────────────────
+      # 10. Orchestrator にコールバック
       - name: Callback to Orchestrator
         if: always()
         env:
@@ -240,37 +314,31 @@ jobs:
           STATUS="success"
           ERROR_MSG=""
 
-          # Claude Code が失敗した場合
-          if [ "${{ steps.claude.outputs.exit_code }}" != "0" ]; then
+          if [ "${{ steps.agent.outcome }}" != "success" ]; then
             STATUS="failure"
-            ERROR_MSG="Claude Code 実行失敗 (exit: ${{ steps.claude.outputs.exit_code }})"
+            ERROR_MSG="OpenAI agent 実行失敗"
           fi
 
-          # 変更がなかった場合
           if [ "${{ steps.commit.outputs.has_changes }}" != "true" ]; then
             STATUS="failure"
-            ERROR_MSG="${ERROR_MSG} / 変更なし（コードが生成されませんでした）"
+            ERROR_MSG="${ERROR_MSG} / 変更なし"
           fi
 
-          PAYLOAD=$(cat <<EOF
-          {
-            "callback_secret": "${{ inputs.callback_secret }}",
-            "run_id": "${{ inputs.run_id }}",
-            "status": "${STATUS}",
-            "pr_url": "${{ steps.pr.outputs.pr_url }}",
-            "pr_number": "${{ steps.pr.outputs.pr_number }}",
-            "summary": "${{ steps.summary.outputs.summary }}",
-            "error": "${ERROR_MSG}",
-            "actions_run_id": ${{ github.run_id }}
-          }
-          EOF
-          )
+          PAYLOAD=$(jq -n \
+            --arg secret "${{ inputs.callback_secret }}" \
+            --arg run_id "${{ inputs.run_id }}" \
+            --arg status "$STATUS" \
+            --arg pr_url "${{ steps.pr.outputs.pr_url }}" \
+            --arg pr_number "${{ steps.pr.outputs.pr_number }}" \
+            --arg summary "${{ steps.summary.outputs.summary }}" \
+            --arg error "$ERROR_MSG" \
+            --argjson actions_run_id ${{ github.run_id }} \
+            '{callback_secret:$secret,run_id:$run_id,status:$status,pr_url:$pr_url,pr_number:$pr_number,summary:$summary,error:$error,actions_run_id:$actions_run_id}')
 
           if [ -n "$ORCHESTRATOR_URL" ]; then
             curl -s -X POST "${ORCHESTRATOR_URL}/dev/callback" \
               -H "Content-Type: application/json" \
-              -d "$PAYLOAD" || echo "Orchestratorへのコールバック失敗（続行）"
+              -d "$PAYLOAD" || echo "コールバック失敗（続行）"
           else
             echo "ORCHESTRATOR_URL未設定: コールバックスキップ"
-            echo "Payload: $PAYLOAD"
           fi
