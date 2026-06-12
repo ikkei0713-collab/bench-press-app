@@ -31,6 +31,8 @@ import {
   Check,
   LogOut,
   Camera,
+  Ruler,
+  Scale,
 } from "lucide-react";
 
 interface UserProfile {
@@ -44,6 +46,8 @@ interface UserProfile {
   current_week: number;
   current_day: number;
   avatar_url: string | null;
+  height_cm: number | null;
+  weight_kg: number | null;
 }
 
 interface Friend {
@@ -61,6 +65,8 @@ export default function SettingsPage() {
   const [benchMax, setBenchMax] = useState("");
   const [pauseMax, setPauseMax] = useState("");
   const [legsUpMax, setLegsUpMax] = useState("");
+  const [heightCm, setHeightCm] = useState("");
+  const [weightKg, setWeightKg] = useState("");
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [saved, setSaved] = useState(false);
@@ -129,6 +135,8 @@ export default function SettingsPage() {
       setBenchMax(data.bench_max?.toString() || "");
       setPauseMax(data.pause_max?.toString() || "");
       setLegsUpMax(data.legs_up_max?.toString() || "");
+      setHeightCm(data.height_cm?.toString() || "");
+      setWeightKg(data.weight_kg?.toString() || "");
     }
 
     await fetchFriends(user.id);
@@ -151,10 +159,14 @@ export default function SettingsPage() {
     const bench = benchMax ? parseFloat(benchMax) : null;
     const pause = pauseMax ? parseFloat(pauseMax) : null;
     const legsUp = legsUpMax ? parseFloat(legsUpMax) : null;
+    const height = heightCm ? parseFloat(heightCm) : null;
+    const weight = weightKg ? parseFloat(weightKg) : null;
 
     if (bench != null) updates.bench_max = bench;
     if (pause != null) updates.pause_max = pause;
     if (legsUp != null) updates.legs_up_max = legsUp;
+    updates.height_cm = height;
+    updates.weight_kg = weight;
 
     const { error } = await supabase
       .from("profiles")
@@ -305,7 +317,7 @@ export default function SettingsPage() {
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
-        <div className="animate-pulse text-primary neon-text text-2xl">Loading...</div>
+        <div className="animate-pulse text-primary text-xl font-medium tracking-wide">読み込み中...</div>
       </div>
     );
   }
@@ -313,18 +325,18 @@ export default function SettingsPage() {
   return (
     <div className="min-h-screen pb-24">
       {/* Header */}
-      <header className="sticky top-0 z-50 bg-background/80 backdrop-blur-lg border-b border-border">
+      <header className="sticky top-0 z-50 bg-background/85 backdrop-blur-xl border-b border-border/60">
         <div className="max-w-lg mx-auto px-4 h-16 flex items-center gap-3">
           <Link href="/dashboard">
-            <Button variant="ghost" size="icon">
-              <ArrowLeft className="w-5 h-5" />
+            <Button variant="ghost" size="icon" className="w-9 h-9 text-muted-foreground hover:text-foreground">
+              <ArrowLeft className="w-4.5 h-4.5" />
             </Button>
           </Link>
-          <h1 className="font-bold text-lg">設定</h1>
+          <h1 className="font-bold text-base">設定</h1>
         </div>
       </header>
 
-      <main className="max-w-lg mx-auto px-4 py-6 space-y-6">
+      <main className="max-w-lg mx-auto px-4 py-6 space-y-5">
         {/* ===== プロフィール ===== */}
         <Card>
           <CardHeader>
@@ -385,6 +397,61 @@ export default function SettingsPage() {
                 {profile?.email}
               </div>
             </div>
+
+            {/* 身長・体重 */}
+            <div className="grid grid-cols-2 gap-3">
+              <div className="space-y-2">
+                <Label className="flex items-center gap-2">
+                  <Ruler className="w-4 h-4 text-muted-foreground" />
+                  身長 (cm)
+                </Label>
+                <Input
+                  type="number"
+                  step="0.1"
+                  placeholder="例: 175"
+                  value={heightCm}
+                  onChange={(e) => setHeightCm(e.target.value)}
+                  className="h-12 text-base"
+                />
+              </div>
+              <div className="space-y-2">
+                <Label className="flex items-center gap-2">
+                  <Scale className="w-4 h-4 text-muted-foreground" />
+                  体重 (kg)
+                </Label>
+                <Input
+                  type="number"
+                  step="0.1"
+                  placeholder="例: 70"
+                  value={weightKg}
+                  onChange={(e) => setWeightKg(e.target.value)}
+                  className="h-12 text-base"
+                />
+              </div>
+            </div>
+
+            {/* BMI表示 */}
+            {heightCm && weightKg && parseFloat(heightCm) > 0 && parseFloat(weightKg) > 0 && (() => {
+              const h = parseFloat(heightCm) / 100;
+              const w = parseFloat(weightKg);
+              const bmi = w / (h * h);
+              const label =
+                bmi < 18.5 ? "低体重" :
+                bmi < 25   ? "標準" :
+                bmi < 30   ? "過体重" : "肥満";
+              const color =
+                bmi < 18.5 ? "text-yellow-400" :
+                bmi < 25   ? "text-emerald-400" :
+                bmi < 30   ? "text-orange-400" : "text-red-400";
+              return (
+                <div className="flex items-center justify-between px-3 py-2 rounded-md bg-secondary/40 text-sm">
+                  <span className="text-muted-foreground">BMI</span>
+                  <span className={`font-semibold ${color}`}>
+                    {bmi.toFixed(1)} — {label}
+                  </span>
+                </div>
+              );
+            })()}
           </CardContent>
         </Card>
 

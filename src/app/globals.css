@@ -50,40 +50,62 @@
 }
 
 :root {
-  --radius: 0.625rem;
-  --background: oklch(0.1 0.005 260);
-  --foreground: oklch(0.95 0 0);
-  --card: oklch(0.16 0.005 260);
-  --card-foreground: oklch(0.95 0 0);
-  --popover: oklch(0.16 0.005 260);
-  --popover-foreground: oklch(0.95 0 0);
-  --primary: oklch(0.65 0.2 250);
-  --primary-foreground: oklch(0.98 0 0);
-  --secondary: oklch(0.22 0.005 260);
-  --secondary-foreground: oklch(0.9 0 0);
-  --muted: oklch(0.22 0.005 260);
-  --muted-foreground: oklch(0.6 0 0);
-  --accent: oklch(0.65 0.2 250);
-  --accent-foreground: oklch(0.98 0 0);
-  --destructive: oklch(0.65 0.2 25);
-  --border: oklch(0.3 0.01 260);
-  --input: oklch(0.25 0.01 260);
-  --ring: oklch(0.65 0.2 250);
-  --neon: oklch(0.7 0.2 250);
-  --neon-foreground: oklch(0.98 0 0);
-  --chart-1: oklch(0.65 0.2 250);
-  --chart-2: oklch(0.7 0.15 180);
-  --chart-3: oklch(0.75 0.15 60);
-  --chart-4: oklch(0.65 0.2 300);
-  --chart-5: oklch(0.65 0.2 350);
-  --sidebar: oklch(0.14 0.005 260);
-  --sidebar-foreground: oklch(0.95 0 0);
-  --sidebar-primary: oklch(0.65 0.2 250);
-  --sidebar-primary-foreground: oklch(0.98 0 0);
-  --sidebar-accent: oklch(0.22 0.005 260);
-  --sidebar-accent-foreground: oklch(0.95 0 0);
-  --sidebar-border: oklch(0.3 0.01 260);
-  --sidebar-ring: oklch(0.65 0.2 250);
+  --radius: 0.75rem;
+
+  /* Deep navy-blue background — slightly more blue-tinted than before */
+  --background: oklch(0.09 0.012 255);
+  --foreground: oklch(0.93 0.005 240);
+
+  /* Cards stand out clearly from background */
+  --card: oklch(0.14 0.010 255);
+  --card-foreground: oklch(0.93 0.005 240);
+  --popover: oklch(0.14 0.010 255);
+  --popover-foreground: oklch(0.93 0.005 240);
+
+  /* Primary — clean, confident blue */
+  --primary: oklch(0.62 0.19 248);
+  --primary-foreground: oklch(0.99 0 0);
+
+  /* Secondary surfaces */
+  --secondary: oklch(0.19 0.010 255);
+  --secondary-foreground: oklch(0.88 0.005 240);
+
+  /* Muted */
+  --muted: oklch(0.19 0.010 255);
+  --muted-foreground: oklch(0.55 0.008 250);
+
+  /* Accent same as primary */
+  --accent: oklch(0.62 0.19 248);
+  --accent-foreground: oklch(0.99 0 0);
+
+  /* Destructive */
+  --destructive: oklch(0.60 0.20 25);
+
+  /* Borders — subtle, defined */
+  --border: oklch(0.26 0.012 255);
+  --input: oklch(0.22 0.012 255);
+  --ring: oklch(0.62 0.19 248);
+
+  /* Neon tokens — kept for backwards compat, but dialed back */
+  --neon: oklch(0.65 0.18 248);
+  --neon-foreground: oklch(0.99 0 0);
+
+  /* Charts */
+  --chart-1: oklch(0.62 0.19 248);
+  --chart-2: oklch(0.67 0.15 178);
+  --chart-3: oklch(0.72 0.14 58);
+  --chart-4: oklch(0.62 0.18 298);
+  --chart-5: oklch(0.62 0.18 348);
+
+  /* Sidebar */
+  --sidebar: oklch(0.11 0.010 255);
+  --sidebar-foreground: oklch(0.93 0.005 240);
+  --sidebar-primary: oklch(0.62 0.19 248);
+  --sidebar-primary-foreground: oklch(0.99 0 0);
+  --sidebar-accent: oklch(0.19 0.010 255);
+  --sidebar-accent-foreground: oklch(0.93 0.005 240);
+  --sidebar-border: oklch(0.26 0.012 255);
+  --sidebar-ring: oklch(0.62 0.19 248);
 }
 
 @layer base {
@@ -92,96 +114,116 @@
   }
   body {
     @apply bg-background text-foreground;
+    -webkit-font-smoothing: antialiased;
   }
 }
 
-/* Neon glow effects */
+/* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+   NEON / GLOW CLASSES — Preserved for compatibility.
+   Values refined: still distinctive, but more premium.
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+
+/* Card-level glow — subtle elevation, not a laser show */
 .neon-glow {
-  box-shadow: 0 0 10px oklch(0.65 0.2 250 / 0.3),
-              0 0 20px oklch(0.65 0.2 250 / 0.15),
-              0 0 40px oklch(0.65 0.2 250 / 0.05);
-  transition: box-shadow 0.15s ease, filter 0.15s ease;
+  box-shadow:
+    0 0 0 1px oklch(0.62 0.19 248 / 0.18),
+    0 2px 12px oklch(0.62 0.19 248 / 0.18),
+    0 6px 28px oklch(0.62 0.19 248 / 0.08);
+  transition: box-shadow 0.2s ease, transform 0.15s ease;
 }
 
 .neon-glow:hover {
-  box-shadow: 0 0 15px oklch(0.7 0.22 250 / 0.45),
-              0 0 30px oklch(0.7 0.22 250 / 0.25),
-              0 0 60px oklch(0.7 0.22 250 / 0.1);
+  box-shadow:
+    0 0 0 1px oklch(0.65 0.21 248 / 0.28),
+    0 4px 18px oklch(0.65 0.21 248 / 0.24),
+    0 10px 36px oklch(0.65 0.21 248 / 0.12);
+  transform: translateY(-1px);
 }
 
 .neon-glow:active {
-  animation: neon-flash 0.5s ease-out;
+  animation: neon-flash 0.4s ease-out;
+  transform: translateY(0);
 }
 
+/* Text glow — only a soft halo, no harsh double-text */
 .neon-text {
-  text-shadow: 0 0 10px oklch(0.65 0.2 250 / 0.5),
-               0 0 20px oklch(0.65 0.2 250 / 0.3);
+  text-shadow:
+    0 0 14px oklch(0.65 0.18 248 / 0.35),
+    0 0 32px oklch(0.65 0.18 248 / 0.15);
 }
 
+/* Border with a soft inner glow */
 .neon-border {
-  border-color: oklch(0.65 0.2 250 / 0.5);
-  box-shadow: 0 0 8px oklch(0.65 0.2 250 / 0.2),
-              inset 0 0 8px oklch(0.65 0.2 250 / 0.05);
+  border-color: oklch(0.62 0.19 248 / 0.30);
+  box-shadow:
+    0 0 0 1px oklch(0.62 0.19 248 / 0.12),
+    inset 0 0 12px oklch(0.62 0.19 248 / 0.04);
 }
 
-/* Button flash on press */
+/* Button press flash — satisfying but not blinding */
 @keyframes neon-flash {
   0% {
-    box-shadow: 0 0 10px oklch(0.65 0.2 250 / 0.3),
-                0 0 20px oklch(0.65 0.2 250 / 0.15),
-                0 0 40px oklch(0.65 0.2 250 / 0.05);
+    box-shadow:
+      0 0 0 1px oklch(0.62 0.19 248 / 0.18),
+      0 2px 12px oklch(0.62 0.19 248 / 0.18),
+      0 6px 28px oklch(0.62 0.19 248 / 0.08);
     filter: brightness(1);
   }
-  25% {
-    box-shadow: 0 0 30px oklch(0.8 0.28 250 / 0.9),
-                0 0 60px oklch(0.75 0.25 250 / 0.6),
-                0 0 120px oklch(0.7 0.22 250 / 0.3);
-    filter: brightness(1.4);
+  30% {
+    box-shadow:
+      0 0 0 1px oklch(0.75 0.24 248 / 0.55),
+      0 4px 24px oklch(0.72 0.22 248 / 0.45),
+      0 10px 50px oklch(0.70 0.20 248 / 0.22);
+    filter: brightness(1.18);
   }
   100% {
-    box-shadow: 0 0 10px oklch(0.65 0.2 250 / 0.3),
-                0 0 20px oklch(0.65 0.2 250 / 0.15),
-                0 0 40px oklch(0.65 0.2 250 / 0.05);
+    box-shadow:
+      0 0 0 1px oklch(0.62 0.19 248 / 0.18),
+      0 2px 12px oklch(0.62 0.19 248 / 0.18),
+      0 6px 28px oklch(0.62 0.19 248 / 0.08);
     filter: brightness(1);
   }
 }
 
-/* Pulsing CTA button */
+/* CTA pulse — slow and calm, premium feel */
 @keyframes neon-pulse {
   0%, 100% {
-    box-shadow: 0 0 10px oklch(0.65 0.2 250 / 0.3),
-                0 0 20px oklch(0.65 0.2 250 / 0.15),
-                0 0 40px oklch(0.65 0.2 250 / 0.05);
+    box-shadow:
+      0 0 0 1px oklch(0.62 0.19 248 / 0.18),
+      0 2px 12px oklch(0.62 0.19 248 / 0.18),
+      0 6px 28px oklch(0.62 0.19 248 / 0.08);
   }
   50% {
-    box-shadow: 0 0 20px oklch(0.7 0.25 250 / 0.5),
-                0 0 40px oklch(0.7 0.25 250 / 0.3),
-                0 0 80px oklch(0.7 0.25 250 / 0.12);
+    box-shadow:
+      0 0 0 1px oklch(0.65 0.21 248 / 0.28),
+      0 4px 20px oklch(0.65 0.21 248 / 0.28),
+      0 10px 40px oklch(0.65 0.21 248 / 0.14);
   }
 }
 
 .neon-glow-pulse {
-  animation: neon-pulse 2s ease-in-out infinite;
+  animation: neon-pulse 2.8s ease-in-out infinite;
 }
 
 .neon-glow-pulse:active {
-  animation: neon-flash 0.5s ease-out;
+  animation: neon-flash 0.4s ease-out;
 }
 
-/* Dumbbell bounce */
+/* Dumbbell subtle float */
 @keyframes dumbbell-bounce {
-  0%, 100% { transform: translateY(0); }
+  0%, 100% { transform: translateY(0px); }
   50% { transform: translateY(-3px); }
 }
 
 .dumbbell-bounce {
-  animation: dumbbell-bounce 2s ease-in-out infinite;
+  animation: dumbbell-bounce 2.4s ease-in-out infinite;
 }
 
-/* Input focus neon glow */
+/* Input focus — crisp ring, no spread */
 .neon-input:focus {
-  border-color: oklch(0.65 0.2 250 / 0.6) !important;
-  box-shadow: 0 0 8px oklch(0.65 0.2 250 / 0.3),
-              inset 0 0 4px oklch(0.65 0.2 250 / 0.05);
+  border-color: oklch(0.62 0.19 248 / 0.55) !important;
+  box-shadow:
+    0 0 0 3px oklch(0.62 0.19 248 / 0.14),
+    inset 0 0 6px oklch(0.62 0.19 248 / 0.04);
   outline: none;
 }
