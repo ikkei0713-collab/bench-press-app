@@ -7,8 +7,11 @@
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  /* Apple system font stack — on iOS this renders real SF Pro + Hiragino (JP) */
+  --font-sans: -apple-system, BlinkMacSystemFont, "SF Pro Text", "SF Pro Display",
+    "Hiragino Sans", "Hiragino Kaku Gothic ProN", "Noto Sans JP", system-ui,
+    "Segoe UI", Roboto, sans-serif;
+  --font-mono: ui-monospace, SFMono-Regular, "SF Mono", Menlo, monospace;
   --color-sidebar-ring: var(--sidebar-ring);
   --color-sidebar-border: var(--sidebar-border);
   --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
@@ -40,190 +43,246 @@
   --color-card: var(--card);
   --color-neon: var(--neon);
   --color-neon-foreground: var(--neon-foreground);
-  --radius-sm: calc(var(--radius) - 4px);
-  --radius-md: calc(var(--radius) - 2px);
-  --radius-lg: var(--radius);
-  --radius-xl: calc(var(--radius) + 4px);
-  --radius-2xl: calc(var(--radius) + 8px);
-  --radius-3xl: calc(var(--radius) + 12px);
+  --radius-sm: calc(var(--radius) - 6px);
+  --radius-md: calc(var(--radius) - 4px);
+  --radius-lg: calc(var(--radius) - 2px);
+  --radius-xl: var(--radius);
+  --radius-2xl: calc(var(--radius) + 4px);
+  --radius-3xl: calc(var(--radius) + 8px);
   --radius-4xl: calc(var(--radius) + 16px);
 }
 
+/* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+   APPLE-STYLE DESIGN TOKENS (iOS dark — refined, neutral charcoal + systemBlue)
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
 :root {
-  --radius: 0.75rem;
+  --radius: 0.875rem; /* 14px — iOS control radius */
 
-  /* Deep navy-blue background — slightly more blue-tinted than before */
-  --background: oklch(0.09 0.012 255);
-  --foreground: oklch(0.93 0.005 240);
+  /* Soft charcoal base, elevated neutral surfaces (no blue cast) */
+  --background: oklch(0.165 0.004 265);
+  --foreground: oklch(0.975 0.002 265);
 
-  /* Cards stand out clearly from background */
-  --card: oklch(0.14 0.010 255);
-  --card-foreground: oklch(0.93 0.005 240);
-  --popover: oklch(0.14 0.010 255);
-  --popover-foreground: oklch(0.93 0.005 240);
+  /* Grouped cards sit slightly above the base */
+  --card: oklch(0.215 0.004 265);
+  --card-foreground: oklch(0.975 0.002 265);
+  --popover: oklch(0.225 0.004 265);
+  --popover-foreground: oklch(0.975 0.002 265);
 
-  /* Primary — clean, confident blue */
-  --primary: oklch(0.62 0.19 248);
+  /* systemBlue (dark) */
+  --primary: oklch(0.625 0.17 256);
   --primary-foreground: oklch(0.99 0 0);
 
-  /* Secondary surfaces */
-  --secondary: oklch(0.19 0.010 255);
-  --secondary-foreground: oklch(0.88 0.005 240);
+  /* Secondary fill (iOS secondarySystemFill) */
+  --secondary: oklch(0.265 0.004 265);
+  --secondary-foreground: oklch(0.97 0.002 265);
 
-  /* Muted */
-  --muted: oklch(0.19 0.010 255);
-  --muted-foreground: oklch(0.55 0.008 250);
+  /* Muted = quaternary surfaces / secondary labels */
+  --muted: oklch(0.255 0.004 265);
+  --muted-foreground: oklch(0.66 0.006 265);
 
-  /* Accent same as primary */
-  --accent: oklch(0.62 0.19 248);
-  --accent-foreground: oklch(0.99 0 0);
+  /* Accent = neutral hover fill (NOT blue) so ghost/hover reads native */
+  --accent: oklch(0.285 0.004 265);
+  --accent-foreground: oklch(0.975 0.002 265);
 
-  /* Destructive */
-  --destructive: oklch(0.60 0.20 25);
+  /* systemRed (dark) */
+  --destructive: oklch(0.63 0.205 22);
 
-  /* Borders — subtle, defined */
-  --border: oklch(0.26 0.012 255);
-  --input: oklch(0.22 0.012 255);
-  --ring: oklch(0.62 0.19 248);
+  /* Hairline separators — translucent white, like iOS */
+  --border: oklch(1 0 0 / 0.09);
+  --input: oklch(1 0 0 / 0.12);
+  --ring: oklch(0.625 0.17 256);
 
-  /* Neon tokens — kept for backwards compat, but dialed back */
-  --neon: oklch(0.65 0.18 248);
+  /* Legacy neon tokens kept for compatibility (now just = systemBlue) */
+  --neon: oklch(0.625 0.17 256);
   --neon-foreground: oklch(0.99 0 0);
 
-  /* Charts */
-  --chart-1: oklch(0.62 0.19 248);
-  --chart-2: oklch(0.67 0.15 178);
-  --chart-3: oklch(0.72 0.14 58);
-  --chart-4: oklch(0.62 0.18 298);
-  --chart-5: oklch(0.62 0.18 348);
+  /* Charts — Apple system palette: blue / orange / green / purple / pink */
+  --chart-1: oklch(0.64 0.17 256);
+  --chart-2: oklch(0.74 0.16 62);
+  --chart-3: oklch(0.74 0.15 150);
+  --chart-4: oklch(0.62 0.16 300);
+  --chart-5: oklch(0.66 0.17 350);
 
   /* Sidebar */
-  --sidebar: oklch(0.11 0.010 255);
-  --sidebar-foreground: oklch(0.93 0.005 240);
-  --sidebar-primary: oklch(0.62 0.19 248);
+  --sidebar: oklch(0.19 0.004 265);
+  --sidebar-foreground: oklch(0.975 0.002 265);
+  --sidebar-primary: oklch(0.625 0.17 256);
   --sidebar-primary-foreground: oklch(0.99 0 0);
-  --sidebar-accent: oklch(0.19 0.010 255);
-  --sidebar-accent-foreground: oklch(0.93 0.005 240);
-  --sidebar-border: oklch(0.26 0.012 255);
-  --sidebar-ring: oklch(0.62 0.19 248);
+  --sidebar-accent: oklch(0.265 0.004 265);
+  --sidebar-accent-foreground: oklch(0.975 0.002 265);
+  --sidebar-border: oklch(1 0 0 / 0.09);
+  --sidebar-ring: oklch(0.625 0.17 256);
 }
 
 @layer base {
   * {
     @apply border-border outline-ring/50;
   }
+  html {
+    -webkit-text-size-adjust: 100%;
+  }
   body {
     @apply bg-background text-foreground;
     -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
+    /* Kill the blue tap flash on iOS — key for a native feel */
+    -webkit-tap-highlight-color: transparent;
+    letter-spacing: -0.011em; /* SF-style optical tightening */
+  }
+  /* Bold display type gets tighter tracking, like iOS large titles */
+  h1, h2, h3 {
+    letter-spacing: -0.02em;
+  }
+  ::selection {
+    background: oklch(0.625 0.17 256 / 0.32);
   }
 }
 
-/* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-   NEON / GLOW CLASSES — Preserved for compatibility.
-   Values refined: still distinctive, but more premium.
-   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+/* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+   APPLE UTILITIES
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
 
-/* Card-level glow — subtle elevation, not a laser show */
+/* Frosted material — navigation bars, sticky headers */
+.glass {
+  background: color-mix(in oklch, var(--background) 68%, transparent);
+  backdrop-filter: saturate(180%) blur(22px);
+  -webkit-backdrop-filter: saturate(180%) blur(22px);
+}
+
+/* ━━━ LIQUID GLASS (iOS 26 style) — translucent, layered, specular ━━━ */
+.liquid-glass {
+  position: relative;
+  background:
+    linear-gradient(
+      to bottom,
+      oklch(1 0 0 / 0.1),
+      oklch(1 0 0 / 0.025) 38%,
+      oklch(1 0 0 / 0.04)
+    ),
+    color-mix(in oklch, var(--card) 60%, transparent);
+  backdrop-filter: saturate(200%) blur(30px);
+  -webkit-backdrop-filter: saturate(200%) blur(30px);
+  border: 1px solid oklch(1 0 0 / 0.12);
+  box-shadow:
+    inset 0 1px 0 0 oklch(1 0 0 / 0.22),
+    inset 0 -1px 0 0 oklch(0 0 0 / 0.22),
+    0 10px 34px oklch(0 0 0 / 0.42);
+}
+/* Moving specular sheen on the glass top edge */
+.liquid-glass::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  padding: 1px;
+  background: linear-gradient(
+    130deg,
+    oklch(1 0 0 / 0.35),
+    oklch(1 0 0 / 0) 28%,
+    oklch(1 0 0 / 0) 72%,
+    oklch(1 0 0 / 0.18)
+  );
+  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  pointer-events: none;
+}
+
+/* iOS large-title heading */
+.large-title {
+  font-size: clamp(1.75rem, 7vw, 2.125rem);
+  line-height: 1.08;
+  font-weight: 700;
+  letter-spacing: -0.025em;
+}
+
+/* Route transition — children animate in on every navigation */
+@keyframes route-enter {
+  from {
+    opacity: 0;
+    transform: translateY(10px) scale(0.985);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+.route-enter {
+  animation: route-enter 0.42s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+/* Spring-pop for elements appearing (dialogs, cards) */
+@keyframes pop-in {
+  0% { opacity: 0; transform: scale(0.92); }
+  60% { opacity: 1; transform: scale(1.01); }
+  100% { opacity: 1; transform: scale(1); }
+}
+.pop-in {
+  animation: pop-in 0.36s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+/* Tactile press — the universal iOS button feedback (scale + dim) */
+.press {
+  transition: transform 0.14s cubic-bezier(0.2, 0, 0.2, 1), opacity 0.14s ease;
+}
+.press:active {
+  transform: scale(0.96);
+  opacity: 0.88;
+}
+
+/* Safe-area helpers for PWA / notch devices */
+.pb-safe {
+  padding-bottom: max(env(safe-area-inset-bottom), 0.5rem);
+}
+.pt-safe {
+  padding-top: env(safe-area-inset-top);
+}
+
+/* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+   LEGACY .neon-* CLASSES — redefined as restrained Apple effects.
+   (Existing markup keeps working but now looks premium, not neon.)
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+
 .neon-glow {
-  box-shadow:
-    0 0 0 1px oklch(0.62 0.19 248 / 0.18),
-    0 2px 12px oklch(0.62 0.19 248 / 0.18),
-    0 6px 28px oklch(0.62 0.19 248 / 0.08);
-  transition: box-shadow 0.2s ease, transform 0.15s ease;
+  box-shadow: 0 1px 2px oklch(0 0 0 / 0.25);
+  transition: transform 0.14s cubic-bezier(0.2, 0, 0.2, 1), opacity 0.14s ease,
+    box-shadow 0.2s ease;
 }
-
-.neon-glow:hover {
-  box-shadow:
-    0 0 0 1px oklch(0.65 0.21 248 / 0.28),
-    0 4px 18px oklch(0.65 0.21 248 / 0.24),
-    0 10px 36px oklch(0.65 0.21 248 / 0.12);
-  transform: translateY(-1px);
-}
-
 .neon-glow:active {
-  animation: neon-flash 0.4s ease-out;
-  transform: translateY(0);
-}
-
-/* Text glow — only a soft halo, no harsh double-text */
-.neon-text {
-  text-shadow:
-    0 0 14px oklch(0.65 0.18 248 / 0.35),
-    0 0 32px oklch(0.65 0.18 248 / 0.15);
-}
-
-/* Border with a soft inner glow */
-.neon-border {
-  border-color: oklch(0.62 0.19 248 / 0.30);
-  box-shadow:
-    0 0 0 1px oklch(0.62 0.19 248 / 0.12),
-    inset 0 0 12px oklch(0.62 0.19 248 / 0.04);
-}
-
-/* Button press flash — satisfying but not blinding */
-@keyframes neon-flash {
-  0% {
-    box-shadow:
-      0 0 0 1px oklch(0.62 0.19 248 / 0.18),
-      0 2px 12px oklch(0.62 0.19 248 / 0.18),
-      0 6px 28px oklch(0.62 0.19 248 / 0.08);
-    filter: brightness(1);
-  }
-  30% {
-    box-shadow:
-      0 0 0 1px oklch(0.75 0.24 248 / 0.55),
-      0 4px 24px oklch(0.72 0.22 248 / 0.45),
-      0 10px 50px oklch(0.70 0.20 248 / 0.22);
-    filter: brightness(1.18);
-  }
-  100% {
-    box-shadow:
-      0 0 0 1px oklch(0.62 0.19 248 / 0.18),
-      0 2px 12px oklch(0.62 0.19 248 / 0.18),
-      0 6px 28px oklch(0.62 0.19 248 / 0.08);
-    filter: brightness(1);
-  }
-}
-
-/* CTA pulse — slow and calm, premium feel */
-@keyframes neon-pulse {
-  0%, 100% {
-    box-shadow:
-      0 0 0 1px oklch(0.62 0.19 248 / 0.18),
-      0 2px 12px oklch(0.62 0.19 248 / 0.18),
-      0 6px 28px oklch(0.62 0.19 248 / 0.08);
-  }
-  50% {
-    box-shadow:
-      0 0 0 1px oklch(0.65 0.21 248 / 0.28),
-      0 4px 20px oklch(0.65 0.21 248 / 0.28),
-      0 10px 40px oklch(0.65 0.21 248 / 0.14);
-  }
+  transform: scale(0.96);
+  opacity: 0.9;
 }
 
 .neon-glow-pulse {
-  animation: neon-pulse 2.8s ease-in-out infinite;
+  box-shadow: 0 1px 2px oklch(0 0 0 / 0.25);
+  transition: transform 0.14s cubic-bezier(0.2, 0, 0.2, 1), opacity 0.14s ease;
 }
-
 .neon-glow-pulse:active {
-  animation: neon-flash 0.4s ease-out;
+  transform: scale(0.97);
+  opacity: 0.9;
 }
 
-/* Dumbbell subtle float */
-@keyframes dumbbell-bounce {
-  0%, 100% { transform: translateY(0px); }
-  50% { transform: translateY(-3px); }
+/* No more glowing text — just clean type */
+.neon-text {
+  text-shadow: none;
 }
 
-.dumbbell-bounce {
-  animation: dumbbell-bounce 2.4s ease-in-out infinite;
+/* Soft hairline instead of a glowing border */
+.neon-border {
+  border-color: var(--border);
+  box-shadow: none;
 }
 
-/* Input focus — crisp ring, no spread */
-.neon-input:focus {
-  border-color: oklch(0.62 0.19 248 / 0.55) !important;
-  box-shadow:
-    0 0 0 3px oklch(0.62 0.19 248 / 0.14),
-    inset 0 0 6px oklch(0.62 0.19 248 / 0.04);
+/* Calm, focused input ring (iOS field focus) */
+.neon-input:focus,
+.neon-input:focus-visible {
+  border-color: var(--ring) !important;
+  box-shadow: 0 0 0 4px oklch(0.625 0.17 256 / 0.18);
   outline: none;
+}
+
+/* Retire the bouncing dumbbell */
+.dumbbell-bounce {
+  animation: none;
 }

@@ -8,9 +8,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Separator } from "@/components/ui/separator";
 import {
   Dialog,
   DialogContent,
@@ -325,23 +323,25 @@ export default function SettingsPage() {
   return (
     <div className="min-h-screen pb-24">
       {/* Header */}
-      <header className="sticky top-0 z-50 bg-background/85 backdrop-blur-xl border-b border-border/60">
-        <div className="max-w-lg mx-auto px-4 h-16 flex items-center gap-3">
+      <header className="sticky top-0 z-40 glass border-b border-border/60 pt-safe">
+        <div className="max-w-lg mx-auto px-4 h-14 flex items-center gap-2">
           <Link href="/dashboard">
-            <Button variant="ghost" size="icon" className="w-9 h-9 text-muted-foreground hover:text-foreground">
-              <ArrowLeft className="w-4.5 h-4.5" />
+            <Button variant="ghost" size="icon" className="w-9 h-9 rounded-full text-muted-foreground">
+              <ArrowLeft className="w-[18px] h-[18px]" />
             </Button>
           </Link>
-          <h1 className="font-bold text-base">設定</h1>
+          <h1 className="font-semibold text-[17px]">設定</h1>
         </div>
       </header>
 
-      <main className="max-w-lg mx-auto px-4 py-6 space-y-5">
+      <main className="max-w-lg mx-auto px-4 pt-5 space-y-5">
         {/* ===== プロフィール ===== */}
         <Card>
           <CardHeader>
-            <CardTitle className="flex items-center gap-2 text-base">
-              <User className="w-5 h-5 text-primary" />
+            <CardTitle className="flex items-center gap-2.5 text-base">
+              <span className="w-7 h-7 rounded-[9px] bg-primary/12 flex items-center justify-center">
+                <User className="w-4 h-4 text-primary" />
+              </span>
               プロフィール
             </CardTitle>
           </CardHeader>
@@ -349,17 +349,17 @@ export default function SettingsPage() {
             {/* アバター */}
             <div className="flex flex-col items-center gap-3">
               <div className="relative">
-                <Avatar className="w-24 h-24 border-2 border-primary/30">
+                <Avatar className="w-24 h-24 ring-1 ring-border">
                   {profile?.avatar_url ? (
                     <AvatarImage src={profile.avatar_url} alt={profile.display_name} />
                   ) : null}
-                  <AvatarFallback className="bg-primary/20 text-primary text-3xl font-bold">
+                  <AvatarFallback className="bg-secondary text-foreground text-3xl font-semibold">
                     {(profile?.display_name ?? "U").charAt(0)}
                   </AvatarFallback>
                 </Avatar>
                 <label
                   htmlFor="avatar-upload"
-                  className="absolute bottom-0 right-0 w-8 h-8 rounded-full bg-primary flex items-center justify-center cursor-pointer hover:bg-primary/80 transition-colors"
+                  className="press absolute bottom-0 right-0 w-8 h-8 rounded-full bg-primary ring-2 ring-card flex items-center justify-center cursor-pointer"
                 >
                   <Camera className="w-4 h-4 text-primary-foreground" />
                   <input
@@ -377,8 +377,8 @@ export default function SettingsPage() {
               )}
             </div>
 
-            <div className="space-y-2">
-              <Label htmlFor="displayName">表示名</Label>
+            <div className="space-y-1.5">
+              <Label htmlFor="displayName" className="text-xs font-medium text-muted-foreground px-1">表示名</Label>
               <Input
                 id="displayName"
                 type="text"
@@ -388,21 +388,21 @@ export default function SettingsPage() {
                 className="h-12 text-base"
               />
             </div>
-            <div className="space-y-2">
-              <Label className="flex items-center gap-2">
-                <Mail className="w-4 h-4 text-muted-foreground" />
+            <div className="space-y-1.5">
+              <Label className="flex items-center gap-1.5 text-xs font-medium text-muted-foreground px-1">
+                <Mail className="w-3.5 h-3.5" />
                 メールアドレス
               </Label>
-              <div className="h-12 flex items-center px-3 rounded-md bg-secondary/50 text-muted-foreground text-base">
+              <div className="h-12 flex items-center px-3.5 rounded-xl bg-secondary/50 text-muted-foreground text-[15px]">
                 {profile?.email}
               </div>
             </div>
 
             {/* 身長・体重 */}
             <div className="grid grid-cols-2 gap-3">
-              <div className="space-y-2">
-                <Label className="flex items-center gap-2">
-                  <Ruler className="w-4 h-4 text-muted-foreground" />
+              <div className="space-y-1.5">
+                <Label className="flex items-center gap-1.5 text-xs font-medium text-muted-foreground px-1">
+                  <Ruler className="w-3.5 h-3.5" />
                   身長 (cm)
                 </Label>
                 <Input
@@ -414,9 +414,9 @@ export default function SettingsPage() {
                   className="h-12 text-base"
                 />
               </div>
-              <div className="space-y-2">
-                <Label className="flex items-center gap-2">
-                  <Scale className="w-4 h-4 text-muted-foreground" />
+              <div className="space-y-1.5">
+                <Label className="flex items-center gap-1.5 text-xs font-medium text-muted-foreground px-1">
+                  <Scale className="w-3.5 h-3.5" />
                   体重 (kg)
                 </Label>
                 <Input
@@ -444,7 +444,7 @@ export default function SettingsPage() {
                 bmi < 25   ? "text-emerald-400" :
                 bmi < 30   ? "text-orange-400" : "text-red-400";
               return (
-                <div className="flex items-center justify-between px-3 py-2 rounded-md bg-secondary/40 text-sm">
+                <div className="flex items-center justify-between px-3.5 py-3 rounded-xl bg-secondary/50 text-sm">
                   <span className="text-muted-foreground">BMI</span>
                   <span className={`font-semibold ${color}`}>
                     {bmi.toFixed(1)} — {label}
@@ -459,14 +459,16 @@ export default function SettingsPage() {
         {profile?.program_started && (
           <Card>
             <CardHeader>
-              <CardTitle className="flex items-center gap-2 text-base">
-                <Dumbbell className="w-5 h-5 text-primary" />
+              <CardTitle className="flex items-center gap-2.5 text-base">
+                <span className="w-7 h-7 rounded-[9px] bg-primary/12 flex items-center justify-center">
+                  <Dumbbell className="w-4 h-4 text-primary" />
+                </span>
                 MAX重量
               </CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
-              <div className="space-y-2">
-                <Label>ベンチプレス MAX (kg)</Label>
+              <div className="space-y-1.5">
+                <Label className="text-xs font-medium text-muted-foreground px-1">ベンチプレス MAX (kg)</Label>
                 <Input
                   type="number"
                   step="0.5"
@@ -475,8 +477,8 @@ export default function SettingsPage() {
                   className="h-12 text-base"
                 />
               </div>
-              <div className="space-y-2">
-                <Label>2秒止め MAX (kg)</Label>
+              <div className="space-y-1.5">
+                <Label className="text-xs font-medium text-muted-foreground px-1">2秒止め MAX (kg)</Label>
                 <Input
                   type="number"
                   step="0.5"
@@ -485,8 +487,8 @@ export default function SettingsPage() {
                   className="h-12 text-base"
                 />
               </div>
-              <div className="space-y-2">
-                <Label>足上げ MAX (kg)</Label>
+              <div className="space-y-1.5">
+                <Label className="text-xs font-medium text-muted-foreground px-1">足上げ MAX (kg)</Label>
                 <Input
                   type="number"
                   step="0.5"
@@ -495,7 +497,7 @@ export default function SettingsPage() {
                   className="h-12 text-base"
                 />
               </div>
-              <p className="text-xs text-muted-foreground">
+              <p className="text-xs text-muted-foreground px-1">
                 ※ 変更するとプログラムの重量が再計算されます
               </p>
             </CardContent>
@@ -506,7 +508,7 @@ export default function SettingsPage() {
         <Button
           onClick={handleSave}
           disabled={saving}
-          className="w-full h-14 text-lg font-bold neon-glow"
+          className="w-full h-12 text-[16px]"
         >
           {saving ? "保存中..." : saved ? (
             <><Check className="w-5 h-5 mr-2" />保存しました！</>
@@ -515,19 +517,19 @@ export default function SettingsPage() {
           )}
         </Button>
 
-        <Separator />
-
         {/* ===== パスワード変更 ===== */}
         <Card>
           <CardHeader>
-            <CardTitle className="flex items-center gap-2 text-base">
-              <Lock className="w-5 h-5 text-primary" />
+            <CardTitle className="flex items-center gap-2.5 text-base">
+              <span className="w-7 h-7 rounded-[9px] bg-primary/12 flex items-center justify-center">
+                <Lock className="w-4 h-4 text-primary" />
+              </span>
               パスワード変更
             </CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
-            <div className="space-y-2">
-              <Label>新しいパスワード（6文字以上）</Label>
+            <div className="space-y-1.5">
+              <Label className="text-xs font-medium text-muted-foreground px-1">新しいパスワード（6文字以上）</Label>
               <Input
                 type="password"
                 placeholder="新しいパスワード"
@@ -536,8 +538,8 @@ export default function SettingsPage() {
                 className="h-12 text-base"
               />
             </div>
-            <div className="space-y-2">
-              <Label>パスワード確認</Label>
+            <div className="space-y-1.5">
+              <Label className="text-xs font-medium text-muted-foreground px-1">パスワード確認</Label>
               <Input
                 type="password"
                 placeholder="もう一度入力"
@@ -548,7 +550,7 @@ export default function SettingsPage() {
             </div>
 
             {passwordError && (
-              <p className="text-destructive text-sm">{passwordError}</p>
+              <p className="text-destructive text-sm px-1">{passwordError}</p>
             )}
 
             <Button
@@ -566,19 +568,19 @@ export default function SettingsPage() {
           </CardContent>
         </Card>
 
-        <Separator />
-
         {/* ===== フレンド管理 ===== */}
         <Card>
           <CardHeader>
             <div className="flex items-center justify-between">
-              <CardTitle className="flex items-center gap-2 text-base">
-                <UserPlus className="w-5 h-5 text-primary" />
+              <CardTitle className="flex items-center gap-2.5 text-base">
+                <span className="w-7 h-7 rounded-[9px] bg-primary/12 flex items-center justify-center">
+                  <UserPlus className="w-4 h-4 text-primary" />
+                </span>
                 フレンド管理
               </CardTitle>
               <Dialog open={friendDialogOpen} onOpenChange={setFriendDialogOpen}>
                 <DialogTrigger asChild>
-                  <Button size="sm" className="neon-glow">
+                  <Button size="sm">
                     <UserPlus className="w-4 h-4 mr-1" />
                     追加
                   </Button>
@@ -610,11 +612,10 @@ export default function SettingsPage() {
                     )}
 
                     {searchResult && (
-                      <Card>
-                        <CardContent className="p-4 flex items-center justify-between">
+                      <div className="flex items-center justify-between rounded-xl bg-secondary/50 px-3.5 py-3">
                           <div className="flex items-center gap-3">
                             <Avatar>
-                              <AvatarFallback className="bg-primary/20 text-primary">
+                              <AvatarFallback className="bg-secondary text-foreground font-semibold">
                                 {searchResult.display_name.charAt(0)}
                               </AvatarFallback>
                             </Avatar>
@@ -630,8 +631,7 @@ export default function SettingsPage() {
                           <Button onClick={handleAddFriend} disabled={adding} size="sm">
                             {adding ? "追加中..." : "追加"}
                           </Button>
-                        </CardContent>
-                      </Card>
+                      </div>
                     )}
                   </div>
                 </DialogContent>
@@ -644,12 +644,12 @@ export default function SettingsPage() {
                 まだフレンドがいません
               </p>
             ) : (
-              <div className="space-y-3">
+              <div className="space-y-2">
                 {friends.map((friend) => (
-                  <div key={friend.id} className="flex items-center justify-between py-2">
+                  <div key={friend.id} className="flex items-center justify-between rounded-xl bg-secondary/50 px-3 py-2.5">
                     <div className="flex items-center gap-3">
                       <Avatar className="w-10 h-10">
-                        <AvatarFallback className="bg-primary/20 text-primary text-sm">
+                        <AvatarFallback className="bg-secondary text-foreground text-sm font-semibold">
                           {friend.display_name.charAt(0)}
                         </AvatarFallback>
                       </Avatar>
@@ -668,7 +668,7 @@ export default function SettingsPage() {
                       variant="ghost"
                       size="icon"
                       onClick={() => handleRemoveFriend(friend.id)}
-                      className="text-muted-foreground hover:text-destructive"
+                      className="w-9 h-9 rounded-full text-muted-foreground hover:text-destructive"
                     >
                       <X className="w-4 h-4" />
                     </Button>
@@ -679,13 +679,11 @@ export default function SettingsPage() {
           </CardContent>
         </Card>
 
-        <Separator />
-
         {/* ===== ログアウト ===== */}
         <Button
           onClick={handleLogout}
           variant="destructive"
-          className="w-full h-14 text-lg"
+          className="w-full h-12 text-[16px]"
         >
           <LogOut className="w-5 h-5 mr-2" />
           ログアウト

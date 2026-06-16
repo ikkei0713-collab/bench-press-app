@@ -6,6 +6,7 @@ import Link from "next/link";
 import { createClient } from "@/lib/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { TabBar } from "@/components/ui/tab-bar";
 import { ArrowLeft, TrendingUp } from "lucide-react";
 import {
   LineChart,
@@ -60,9 +61,7 @@ export default function ProgressPage() {
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
-        <div className="animate-pulse text-primary neon-text text-2xl">
-          Loading...
-        </div>
+        <div className="animate-pulse text-muted-foreground text-[15px] font-medium">読み込み中...</div>
       </div>
     );
   }
@@ -85,25 +84,27 @@ export default function ProgressPage() {
   const legsUpDiff = first && last ? last.legs_up_max - first.legs_up_max : 0;
 
   return (
-    <div className="min-h-screen pb-24">
+    <div className="min-h-screen pb-28">
       {/* Header */}
-      <header className="sticky top-0 z-50 bg-background/80 backdrop-blur-lg border-b border-border">
-        <div className="max-w-lg mx-auto px-4 h-16 flex items-center gap-3">
+      <header className="sticky top-0 z-40 glass border-b border-border/60 pt-safe">
+        <div className="max-w-lg mx-auto px-4 h-14 flex items-center gap-2">
           <Link href="/dashboard">
-            <Button variant="ghost" size="icon">
-              <ArrowLeft className="w-5 h-5" />
+            <Button variant="ghost" size="icon" className="w-9 h-9 rounded-full text-muted-foreground">
+              <ArrowLeft className="w-[18px] h-[18px]" />
             </Button>
           </Link>
-          <h1 className="font-bold text-lg">重量推移</h1>
+          <h1 className="font-semibold text-[17px]">重量推移</h1>
         </div>
       </header>
 
-      <main className="max-w-lg mx-auto px-4 py-6 space-y-6">
+      <main className="max-w-lg mx-auto px-4 pt-5 space-y-5">
         {records.length === 0 ? (
-          <Card className="neon-border">
-            <CardContent className="pt-6 text-center py-12">
-              <TrendingUp className="w-12 h-12 text-muted-foreground mx-auto mb-4" />
-              <p className="text-muted-foreground">
+          <Card>
+            <CardContent className="text-center py-12 space-y-4">
+              <div className="w-14 h-14 rounded-[16px] bg-secondary flex items-center justify-center mx-auto">
+                <TrendingUp className="w-7 h-7 text-muted-foreground" strokeWidth={2.2} />
+              </div>
+              <p className="text-muted-foreground text-[14px] leading-relaxed">
                 まだ記録がありません。
                 <br />
                 設定ページでMAX重量を更新すると記録されます。
@@ -124,36 +125,39 @@ export default function ProgressPage() {
                 <CardContent>
                   <div className="grid grid-cols-3 gap-4 text-center">
                     <div>
-                      <p className="text-xs text-muted-foreground">ベンチ</p>
-                      <p className="text-xl font-bold text-primary">
-                        {last.bench_max}kg
+                      <p className="text-[11px] text-muted-foreground mb-1">ベンチ</p>
+                      <p className="text-[22px] font-bold tracking-tight text-foreground">
+                        {last.bench_max}
+                        <span className="text-xs font-medium text-muted-foreground ml-0.5">kg</span>
                       </p>
                       <p
-                        className={`text-sm font-medium ${benchDiff > 0 ? "text-emerald-400" : benchDiff < 0 ? "text-red-400" : "text-muted-foreground"}`}
+                        className={`text-[13px] font-medium mt-0.5 ${benchDiff > 0 ? "text-emerald-400" : benchDiff < 0 ? "text-red-400" : "text-muted-foreground"}`}
                       >
                         {benchDiff > 0 ? "+" : ""}
                         {benchDiff}kg
                       </p>
                     </div>
                     <div>
-                      <p className="text-xs text-muted-foreground">2秒止め</p>
-                      <p className="text-xl font-bold text-primary">
-                        {last.pause_max}kg
+                      <p className="text-[11px] text-muted-foreground mb-1">2秒止め</p>
+                      <p className="text-[22px] font-bold tracking-tight text-foreground">
+                        {last.pause_max}
+                        <span className="text-xs font-medium text-muted-foreground ml-0.5">kg</span>
                       </p>
                       <p
-                        className={`text-sm font-medium ${pauseDiff > 0 ? "text-emerald-400" : pauseDiff < 0 ? "text-red-400" : "text-muted-foreground"}`}
+                        className={`text-[13px] font-medium mt-0.5 ${pauseDiff > 0 ? "text-emerald-400" : pauseDiff < 0 ? "text-red-400" : "text-muted-foreground"}`}
                       >
                         {pauseDiff > 0 ? "+" : ""}
                         {pauseDiff}kg
                       </p>
                     </div>
                     <div>
-                      <p className="text-xs text-muted-foreground">足上げ</p>
-                      <p className="text-xl font-bold text-primary">
-                        {last.legs_up_max}kg
+                      <p className="text-[11px] text-muted-foreground mb-1">足上げ</p>
+                      <p className="text-[22px] font-bold tracking-tight text-foreground">
+                        {last.legs_up_max}
+                        <span className="text-xs font-medium text-muted-foreground ml-0.5">kg</span>
                       </p>
                       <p
-                        className={`text-sm font-medium ${legsUpDiff > 0 ? "text-emerald-400" : legsUpDiff < 0 ? "text-red-400" : "text-muted-foreground"}`}
+                        className={`text-[13px] font-medium mt-0.5 ${legsUpDiff > 0 ? "text-emerald-400" : legsUpDiff < 0 ? "text-red-400" : "text-muted-foreground"}`}
                       >
                         {legsUpDiff > 0 ? "+" : ""}
                         {legsUpDiff}kg
@@ -165,7 +169,7 @@ export default function ProgressPage() {
             )}
 
             {/* グラフ */}
-            <Card className="neon-border">
+            <Card>
               <CardHeader>
                 <CardTitle className="text-base">重量推移グラフ</CardTitle>
               </CardHeader>
@@ -178,26 +182,31 @@ export default function ProgressPage() {
                     >
                       <CartesianGrid
                         strokeDasharray="3 3"
-                        stroke="hsl(0 0% 20%)"
+                        stroke="rgba(255,255,255,0.07)"
+                        vertical={false}
                       />
                       <XAxis
                         dataKey="date"
-                        tick={{ fill: "hsl(0 0% 60%)", fontSize: 12 }}
-                        stroke="hsl(0 0% 30%)"
+                        tick={{ fill: "rgba(255,255,255,0.5)", fontSize: 12 }}
+                        axisLine={{ stroke: "rgba(255,255,255,0.1)" }}
+                        tickLine={false}
                       />
                       <YAxis
-                        tick={{ fill: "hsl(0 0% 60%)", fontSize: 12 }}
-                        stroke="hsl(0 0% 30%)"
+                        tick={{ fill: "rgba(255,255,255,0.5)", fontSize: 12 }}
+                        axisLine={{ stroke: "rgba(255,255,255,0.1)" }}
+                        tickLine={false}
                         domain={["dataMin - 5", "dataMax + 5"]}
                       />
                       <Tooltip
                         contentStyle={{
-                          backgroundColor: "hsl(240 10% 10%)",
-                          border: "1px solid hsl(240 10% 25%)",
-                          borderRadius: "8px",
+                          backgroundColor: "rgba(30,32,38,0.9)",
+                          border: "1px solid rgba(255,255,255,0.12)",
+                          borderRadius: "14px",
                           color: "white",
+                          backdropFilter: "blur(12px)",
+                          boxShadow: "0 8px 28px rgba(0,0,0,0.4)",
                         }}
-                        labelStyle={{ color: "hsl(0 0% 70%)" }}
+                        labelStyle={{ color: "rgba(255,255,255,0.6)" }}
                       />
                       <Legend
                         wrapperStyle={{ fontSize: "12px", paddingTop: "8px" }}
@@ -205,26 +214,26 @@ export default function ProgressPage() {
                       <Line
                         type="monotone"
                         dataKey="ベンチ"
-                        stroke="hsl(220 90% 60%)"
-                        strokeWidth={2}
-                        dot={{ fill: "hsl(220 90% 60%)", r: 4 }}
-                        activeDot={{ r: 6 }}
+                        stroke="#0A84FF"
+                        strokeWidth={2.5}
+                        dot={{ fill: "#0A84FF", r: 3 }}
+                        activeDot={{ r: 5 }}
                       />
                       <Line
                         type="monotone"
                         dataKey="2秒止め"
-                        stroke="hsl(30 90% 55%)"
-                        strokeWidth={2}
-                        dot={{ fill: "hsl(30 90% 55%)", r: 4 }}
-                        activeDot={{ r: 6 }}
+                        stroke="#FF9F0A"
+                        strokeWidth={2.5}
+                        dot={{ fill: "#FF9F0A", r: 3 }}
+                        activeDot={{ r: 5 }}
                       />
                       <Line
                         type="monotone"
                         dataKey="足上げ"
-                        stroke="hsl(150 70% 50%)"
-                        strokeWidth={2}
-                        dot={{ fill: "hsl(150 70% 50%)", r: 4 }}
-                        activeDot={{ r: 6 }}
+                        stroke="#30D158"
+                        strokeWidth={2.5}
+                        dot={{ fill: "#30D158", r: 3 }}
+                        activeDot={{ r: 5 }}
                       />
                     </LineChart>
                   </ResponsiveContainer>
@@ -238,20 +247,20 @@ export default function ProgressPage() {
                 <CardTitle className="text-base">記録一覧</CardTitle>
               </CardHeader>
               <CardContent>
-                <div className="space-y-3">
+                <div>
                   {[...records].reverse().map((r) => (
                     <div
                       key={r.id}
-                      className="flex items-center justify-between py-2 border-b border-border last:border-0"
+                      className="flex items-center justify-between py-3 border-b border-border/60 last:border-0"
                     >
-                      <p className="text-sm text-muted-foreground">
+                      <p className="text-[13px] text-muted-foreground">
                         {new Date(r.recorded_at).toLocaleDateString("ja-JP", {
                           year: "numeric",
                           month: "short",
                           day: "numeric",
                         })}
                       </p>
-                      <div className="flex gap-4 text-sm">
+                      <div className="flex gap-4 text-[14px]">
                         <span>
                           <span className="text-muted-foreground">B:</span>{" "}
                           <span className="font-medium">{r.bench_max}kg</span>
@@ -273,6 +282,8 @@ export default function ProgressPage() {
           </>
         )}
       </main>
+
+      <TabBar />
     </div>
   );
 }
