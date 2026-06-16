@@ -17,6 +17,7 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
+import { TabBar } from "@/components/ui/tab-bar";
 import { ArrowLeft, UserPlus, Trophy, Search, ChevronRight } from "lucide-react";
 
 interface FriendProfile {
@@ -185,9 +186,7 @@ export default function FriendsPage() {
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
-        <div className="animate-pulse text-primary neon-text text-2xl">
-          Loading...
-        </div>
+        <div className="animate-pulse text-muted-foreground text-[15px] font-medium">読み込み中...</div>
       </div>
     );
   }
@@ -213,7 +212,7 @@ export default function FriendsPage() {
     isMe: boolean
   ) => (
     <div
-      className={`flex items-center gap-3 py-2 ${!isMe ? "cursor-pointer hover:bg-primary/5 rounded-lg px-1 -mx-1 transition-colors" : ""}`}
+      className={`flex items-center gap-3 py-2 ${!isMe ? "press cursor-pointer active:bg-secondary/40 rounded-xl px-1.5 -mx-1.5" : ""}`}
       onClick={() => {
         if (!isMe) fetchFriendsFriends(member);
       }}
@@ -226,7 +225,7 @@ export default function FriendsPage() {
         ) : rank === 2 ? (
           <span className="text-xl">🥉</span>
         ) : (
-          <span className="text-sm text-muted-foreground font-bold">
+          <span className="text-sm text-muted-foreground font-semibold">
             {rank + 1}
           </span>
         )}
@@ -236,7 +235,7 @@ export default function FriendsPage() {
           <AvatarImage src={member.avatar_url} alt={member.display_name} />
         ) : null}
         <AvatarFallback
-          className={`text-sm ${isMe ? "bg-primary/30 text-primary font-bold" : "bg-primary/20 text-primary"}`}
+          className={`text-sm font-semibold ${isMe ? "bg-primary/25 text-primary" : "bg-secondary text-foreground"}`}
         >
           {member.display_name.charAt(0)}
         </AvatarFallback>
@@ -245,7 +244,7 @@ export default function FriendsPage() {
         <p className={`font-medium truncate ${isMe ? "text-primary" : ""}`}>
           {member.display_name}
           {isMe && (
-            <span className="text-xs ml-1 text-muted-foreground">（自分）</span>
+            <span className="text-xs ml-1 text-muted-foreground font-normal">（自分）</span>
           )}
         </p>
         <p className="text-xs text-muted-foreground">
@@ -255,33 +254,33 @@ export default function FriendsPage() {
       <div className="flex items-center gap-2 shrink-0">
         <Badge
           variant="outline"
-          className={isMe ? "neon-border text-primary font-bold" : "neon-border text-primary"}
+          className="text-[11px] px-2.5 py-1 bg-primary/15 text-primary border-transparent font-semibold rounded-full"
         >
           W{member.current_week}-D{member.current_day}
         </Badge>
         {!isMe && (
-          <ChevronRight className="w-4 h-4 text-muted-foreground" />
+          <ChevronRight className="w-4 h-4 text-muted-foreground/50" />
         )}
       </div>
     </div>
   );
 
   return (
-    <div className="min-h-screen pb-24">
+    <div className="min-h-screen pb-28">
       {/* Header */}
-      <header className="sticky top-0 z-50 bg-background/80 backdrop-blur-lg border-b border-border">
-        <div className="max-w-lg mx-auto px-4 h-16 flex items-center justify-between">
-          <div className="flex items-center gap-3">
+      <header className="sticky top-0 z-40 glass border-b border-border/60 pt-safe">
+        <div className="max-w-lg mx-auto px-4 h-14 flex items-center justify-between">
+          <div className="flex items-center gap-2">
             <Link href="/dashboard">
-              <Button variant="ghost" size="icon">
-                <ArrowLeft className="w-5 h-5" />
+              <Button variant="ghost" size="icon" className="w-9 h-9 rounded-full text-muted-foreground">
+                <ArrowLeft className="w-[18px] h-[18px]" />
               </Button>
             </Link>
-            <h1 className="font-bold text-lg">フレンド</h1>
+            <h1 className="font-semibold text-[17px]">フレンド</h1>
           </div>
           <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
             <DialogTrigger asChild>
-              <Button size="icon" className="neon-glow">
+              <Button size="icon" className="rounded-full">
                 <UserPlus className="w-5 h-5" />
               </Button>
             </DialogTrigger>
@@ -315,7 +314,7 @@ export default function FriendsPage() {
 
                 {searchResult && (
                   <Card>
-                    <CardContent className="p-4 flex items-center justify-between">
+                    <CardContent className="flex items-center justify-between py-0">
                       <div className="flex items-center gap-3">
                         <Avatar>
                           {searchResult.avatar_url ? (
@@ -324,7 +323,7 @@ export default function FriendsPage() {
                               alt={searchResult.display_name}
                             />
                           ) : null}
-                          <AvatarFallback className="bg-primary/20 text-primary">
+                          <AvatarFallback className="bg-secondary text-foreground font-semibold">
                             {searchResult.display_name.charAt(0)}
                           </AvatarFallback>
                         </Avatar>
@@ -357,16 +356,16 @@ export default function FriendsPage() {
 
       {/* 自分の情報 - 固定表示 */}
       {myProfile?.program_started && (
-        <div className="sticky top-16 z-40 bg-background/95 backdrop-blur-lg border-b border-primary/20">
+        <div className="sticky top-14 z-30 glass border-b border-border/60">
           <div className="max-w-lg mx-auto px-4">
             {renderMember(myProfile, myRank, true)}
           </div>
         </div>
       )}
 
-      <main className="max-w-lg mx-auto px-4 py-6 space-y-6">
+      <main className="max-w-lg mx-auto px-4 pt-5 space-y-5">
         {/* Leaderboard */}
-        <Card className="neon-border">
+        <Card>
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <Trophy className="w-5 h-5 text-primary" />
@@ -408,22 +407,22 @@ export default function FriendsPage() {
                 .map((friend) => (
                   <div
                     key={friend.id}
-                    className="flex items-center gap-3 py-1 cursor-pointer hover:bg-primary/5 rounded-lg px-1 -mx-1 transition-colors"
+                    className="press cursor-pointer flex items-center gap-3 py-1.5 active:bg-secondary/40 rounded-xl px-1.5 -mx-1.5"
                     onClick={() => fetchFriendsFriends(friend)}
                   >
-                    <Avatar className="w-8 h-8">
+                    <Avatar className="w-9 h-9">
                       {friend.avatar_url ? (
                         <AvatarImage
                           src={friend.avatar_url}
                           alt={friend.display_name}
                         />
                       ) : null}
-                      <AvatarFallback className="bg-secondary text-muted-foreground text-xs">
+                      <AvatarFallback className="bg-secondary text-muted-foreground text-xs font-semibold">
                         {friend.display_name.charAt(0)}
                       </AvatarFallback>
                     </Avatar>
-                    <p className="text-sm flex-1">{friend.display_name}</p>
-                    <ChevronRight className="w-4 h-4 text-muted-foreground" />
+                    <p className="text-[15px] font-medium flex-1">{friend.display_name}</p>
+                    <ChevronRight className="w-4 h-4 text-muted-foreground/50" />
                   </div>
                 ))}
             </CardContent>
@@ -443,7 +442,7 @@ export default function FriendsPage() {
                     alt={selectedFriend.display_name}
                   />
                 ) : null}
-                <AvatarFallback className="bg-primary/20 text-primary text-sm">
+                <AvatarFallback className="bg-secondary text-foreground text-sm font-semibold">
                   {selectedFriend?.display_name.charAt(0)}
                 </AvatarFallback>
               </Avatar>
@@ -483,7 +482,7 @@ export default function FriendsPage() {
                             alt={fof.display_name}
                           />
                         ) : null}
-                        <AvatarFallback className="bg-primary/20 text-primary text-sm">
+                        <AvatarFallback className="bg-secondary text-foreground text-sm font-semibold">
                           {fof.display_name.charAt(0)}
                         </AvatarFallback>
                       </Avatar>
@@ -515,7 +514,7 @@ export default function FriendsPage() {
                       </Button>
                     )}
                     {alreadyFriend && !isMe && (
-                      <Badge variant="outline" className="text-xs shrink-0">
+                      <Badge variant="outline" className="text-[11px] px-2.5 py-1 bg-secondary text-muted-foreground border-transparent font-medium rounded-full shrink-0">
                         フレンド済み
                       </Badge>
                     )}
@@ -526,6 +525,8 @@ export default function FriendsPage() {
           </div>
         </DialogContent>
       </Dialog>
+
+      <TabBar />
     </div>
   );
 }

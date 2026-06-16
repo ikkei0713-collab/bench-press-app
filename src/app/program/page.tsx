@@ -11,6 +11,7 @@ import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Separator } from "@/components/ui/separator";
 import { Input } from "@/components/ui/input";
+import { TabBar } from "@/components/ui/tab-bar";
 import {
   ArrowLeft,
   Check,
@@ -515,9 +516,7 @@ export default function ProgramPage() {
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
-        <div className="animate-pulse text-primary neon-text text-2xl">
-          Loading...
-        </div>
+        <div className="animate-pulse text-muted-foreground text-[15px] font-medium">読み込み中...</div>
       </div>
     );
   }
@@ -526,9 +525,9 @@ export default function ProgramPage() {
   if (!weekData) return null;
 
   const exerciseColor: Record<string, string> = {
-    ベンチプレス: "bg-primary/20 text-primary border-primary/30",
-    "2秒止め": "bg-orange-500/20 text-orange-400 border-orange-500/30",
-    足上げ: "bg-emerald-500/20 text-emerald-400 border-emerald-500/30",
+    ベンチプレス: "rounded-full bg-primary/15 text-primary border-transparent",
+    "2秒止め": "rounded-full bg-orange-500/15 text-orange-400 border-transparent",
+    足上げ: "rounded-full bg-emerald-500/15 text-emerald-400 border-transparent",
   };
 
   const dayLabels = ["Day 1（月）", "Day 2（水）", "Day 3（金）"];
@@ -544,8 +543,8 @@ export default function ProgramPage() {
     const exLog = logs[key]?.[exIdx];
 
     return (
-      <Card key={exIdx} className="overflow-hidden neon-border">
-        <CardContent className="p-4 space-y-3">
+      <Card key={exIdx} className="overflow-hidden">
+        <CardContent className="p-4 space-y-3.5">
           {/* Header */}
           <div className="flex items-center justify-between">
             <Badge
@@ -554,14 +553,14 @@ export default function ProgramPage() {
             >
               {ex.exercise}
             </Badge>
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-2.5">
               {ex.rpe && (
-                <span className="text-xs text-muted-foreground">
+                <span className="text-[11px] text-muted-foreground">
                   RPE {Math.round(ex.rpe)}
                 </span>
               )}
               {ex.e1rm && (
-                <span className="text-xs text-muted-foreground">
+                <span className="text-[11px] text-muted-foreground">
                   e1RM {Math.round(ex.e1rm * 10) / 10}kg
                 </span>
               )}
@@ -569,7 +568,7 @@ export default function ProgramPage() {
           </div>
 
           {/* Planned summary */}
-          <p className="text-xs text-muted-foreground">
+          <p className="text-[12px] text-muted-foreground">
             予定: {Math.round(ex.weight * 2) / 2}kg x {ex.reps}回 x{" "}
             {ex.sets}set
           </p>
@@ -578,14 +577,14 @@ export default function ProgramPage() {
           <div className="space-y-2">
             {Array.from({ length: ex.sets }, (_, setIdx) => (
               <div key={setIdx} className="flex items-center gap-2">
-                <span className="text-xs text-muted-foreground w-8 shrink-0">
+                <span className="text-xs text-muted-foreground w-7 shrink-0 font-medium">
                   S{setIdx + 1}
                 </span>
                 <Input
                   type="number"
                   inputMode="decimal"
                   step="0.5"
-                  className="h-10 w-[5.5rem] text-center neon-input"
+                  className="h-11 w-[5.5rem] text-center"
                   value={exLog?.sets[setIdx]?.actual_weight ?? ""}
                   onChange={(e) =>
                     handleSetChange(
@@ -604,7 +603,7 @@ export default function ProgramPage() {
                   type="number"
                   inputMode="numeric"
                   step="1"
-                  className="h-10 w-16 text-center neon-input"
+                  className="h-11 w-16 text-center"
                   value={exLog?.sets[setIdx]?.actual_reps ?? ""}
                   onChange={(e) =>
                     handleSetChange(
@@ -624,10 +623,10 @@ export default function ProgramPage() {
 
           {/* Memo */}
           <div className="flex items-start gap-2">
-            <MessageSquare className="w-4 h-4 text-muted-foreground mt-2 shrink-0" />
+            <MessageSquare className="w-4 h-4 text-muted-foreground mt-2.5 shrink-0" />
             <textarea
               placeholder="メモを入力..."
-              className="w-full rounded-md border border-input bg-transparent px-3 py-2 text-sm placeholder:text-muted-foreground min-h-[48px] max-h-[120px] resize-y neon-input focus:outline-none"
+              className="w-full rounded-xl border border-input bg-secondary/50 px-3.5 py-2.5 text-sm placeholder:text-muted-foreground min-h-[48px] max-h-[120px] resize-y focus:outline-none focus:border-ring focus:ring-4 focus:ring-primary/15"
               value={exLog?.memo ?? ""}
               onChange={(e) =>
                 handleMemoChange(week, day, exIdx, e.target.value)
@@ -651,7 +650,7 @@ export default function ProgramPage() {
 
     return (
       <Card key={exIdx} className="overflow-hidden">
-        <CardContent className="p-4 space-y-3">
+        <CardContent className="p-4 space-y-3.5">
           {/* Header */}
           <div className="flex items-center justify-between">
             <Badge
@@ -662,7 +661,7 @@ export default function ProgramPage() {
             </Badge>
             <div className="flex items-center gap-2">
               {ex.rpe && (
-                <span className="text-xs text-muted-foreground">
+                <span className="text-[11px] text-muted-foreground">
                   RPE {Math.round(ex.rpe)}
                 </span>
               )}
@@ -672,11 +671,11 @@ export default function ProgramPage() {
           {exLog ? (
             <>
               {/* Show actual data per set */}
-              <p className="text-xs text-muted-foreground">
+              <p className="text-[12px] text-muted-foreground">
                 予定: {Math.round(ex.weight * 2) / 2}kg x {ex.reps}回 x{" "}
                 {ex.sets}set
               </p>
-              <div className="space-y-1">
+              <div className="space-y-1.5">
                 {exLog.sets.map((s, setIdx) => {
                   const actualW = s.actual_weight
                     ? parseFloat(s.actual_weight)
@@ -698,10 +697,10 @@ export default function ProgramPage() {
                       key={setIdx}
                       className="flex items-center gap-2 text-sm"
                     >
-                      <span className="text-xs text-muted-foreground w-8">
+                      <span className="text-xs text-muted-foreground w-7 font-medium">
                         S{setIdx + 1}
                       </span>
-                      <span className="font-medium">
+                      <span className="font-medium tabular-nums">
                         {actualW ?? "-"}kg
                       </span>
                       {diffW != null && diffW !== 0 && (
@@ -713,7 +712,7 @@ export default function ProgramPage() {
                         </span>
                       )}
                       <span className="text-muted-foreground">x</span>
-                      <span className="font-medium">
+                      <span className="font-medium tabular-nums">
                         {actualR ?? "-"}回
                       </span>
                       {diffR != null && diffR !== 0 && (
@@ -729,9 +728,9 @@ export default function ProgramPage() {
                 })}
               </div>
               {exLog.memo && (
-                <div className="flex items-start gap-2 pt-1">
+                <div className="flex items-start gap-2 pt-0.5">
                   <MessageSquare className="w-3.5 h-3.5 text-muted-foreground mt-0.5 shrink-0" />
-                  <p className="text-xs text-muted-foreground">{exLog.memo}</p>
+                  <p className="text-xs text-muted-foreground leading-relaxed">{exLog.memo}</p>
                 </div>
               )}
             </>
@@ -740,22 +739,29 @@ export default function ProgramPage() {
             <>
               <div className="grid grid-cols-3 gap-4 text-center">
                 <div>
-                  <p className="text-xs text-muted-foreground">重量</p>
-                  <p className="text-2xl font-bold">
-                    {Math.round(ex.weight * 2) / 2}kg
+                  <p className="text-[11px] text-muted-foreground mb-1">重量</p>
+                  <p className="text-[22px] font-bold tracking-tight">
+                    {Math.round(ex.weight * 2) / 2}
+                    <span className="text-xs font-medium text-muted-foreground ml-0.5">kg</span>
                   </p>
                 </div>
                 <div>
-                  <p className="text-xs text-muted-foreground">回数</p>
-                  <p className="text-2xl font-bold">{ex.reps}回</p>
+                  <p className="text-[11px] text-muted-foreground mb-1">回数</p>
+                  <p className="text-[22px] font-bold tracking-tight">
+                    {ex.reps}
+                    <span className="text-xs font-medium text-muted-foreground ml-0.5">回</span>
+                  </p>
                 </div>
                 <div>
-                  <p className="text-xs text-muted-foreground">セット</p>
-                  <p className="text-2xl font-bold">{ex.sets}set</p>
+                  <p className="text-[11px] text-muted-foreground mb-1">セット</p>
+                  <p className="text-[22px] font-bold tracking-tight">
+                    {ex.sets}
+                    <span className="text-xs font-medium text-muted-foreground ml-0.5">set</span>
+                  </p>
                 </div>
               </div>
               {ex.e1rm && (
-                <p className="text-xs text-muted-foreground text-center mt-2">
+                <p className="text-[12px] text-muted-foreground text-center">
                   推定1RM: {Math.round(ex.e1rm * 10) / 10}kg
                 </p>
               )}
@@ -778,7 +784,7 @@ export default function ProgramPage() {
 
     return (
       <Card key={exIdx} className="overflow-hidden border-primary/40">
-        <CardContent className="p-4 space-y-3">
+        <CardContent className="p-4 space-y-3.5">
           <div className="flex items-center justify-between">
             <Badge
               variant="outline"
@@ -788,17 +794,17 @@ export default function ProgramPage() {
             </Badge>
             <div className="flex items-center gap-2">
               {ex.rpe && (
-                <span className="text-xs text-muted-foreground">
+                <span className="text-[11px] text-muted-foreground">
                   RPE {Math.round(ex.rpe)}
                 </span>
               )}
-              <Badge variant="outline" className="text-xs text-orange-400 border-orange-400/30">
+              <Badge variant="outline" className="rounded-full bg-orange-500/15 text-orange-400 border-transparent text-[11px] px-2.5 py-0.5">
                 編集中
               </Badge>
             </div>
           </div>
 
-          <p className="text-xs text-muted-foreground">
+          <p className="text-[12px] text-muted-foreground">
             予定: {Math.round(ex.weight * 2) / 2}kg x {ex.reps}回 x{" "}
             {ex.sets}set
           </p>
@@ -806,14 +812,14 @@ export default function ProgramPage() {
           <div className="space-y-2">
             {exLog?.sets.map((_, setIdx) => (
               <div key={setIdx} className="flex items-center gap-2">
-                <span className="text-xs text-muted-foreground w-8 shrink-0">
+                <span className="text-xs text-muted-foreground w-7 shrink-0 font-medium">
                   S{setIdx + 1}
                 </span>
                 <Input
                   type="number"
                   inputMode="decimal"
                   step="0.5"
-                  className="h-10 w-[5.5rem] text-center neon-input"
+                  className="h-11 w-[5.5rem] text-center"
                   value={exLog?.sets[setIdx]?.actual_weight ?? ""}
                   onChange={(e) =>
                     handleSetChange(week, day, exIdx, setIdx, "weight", e.target.value)
@@ -825,7 +831,7 @@ export default function ProgramPage() {
                   type="number"
                   inputMode="numeric"
                   step="1"
-                  className="h-10 w-16 text-center neon-input"
+                  className="h-11 w-16 text-center"
                   value={exLog?.sets[setIdx]?.actual_reps ?? ""}
                   onChange={(e) =>
                     handleSetChange(week, day, exIdx, setIdx, "reps", e.target.value)
@@ -837,10 +843,10 @@ export default function ProgramPage() {
           </div>
 
           <div className="flex items-start gap-2">
-            <MessageSquare className="w-4 h-4 text-muted-foreground mt-2 shrink-0" />
+            <MessageSquare className="w-4 h-4 text-muted-foreground mt-2.5 shrink-0" />
             <textarea
               placeholder="メモを入力..."
-              className="w-full rounded-md border border-input bg-transparent px-3 py-2 text-sm placeholder:text-muted-foreground min-h-[48px] max-h-[120px] resize-y neon-input focus:outline-none"
+              className="w-full rounded-xl border border-input bg-secondary/50 px-3.5 py-2.5 text-sm placeholder:text-muted-foreground min-h-[48px] max-h-[120px] resize-y focus:outline-none focus:border-ring focus:ring-4 focus:ring-primary/15"
               value={exLog?.memo ?? ""}
               onChange={(e) => handleMemoChange(week, day, exIdx, e.target.value)}
             />
@@ -854,8 +860,8 @@ export default function ProgramPage() {
   const renderPlannedExercise = (ex: ExerciseSet, exIdx: number) => {
     return (
       <Card key={exIdx} className="overflow-hidden">
-        <CardContent className="p-4">
-          <div className="flex items-center justify-between mb-3">
+        <CardContent className="p-4 space-y-3.5">
+          <div className="flex items-center justify-between">
             <Badge
               variant="outline"
               className={exerciseColor[ex.exercise] ?? ""}
@@ -863,29 +869,36 @@ export default function ProgramPage() {
               {ex.exercise}
             </Badge>
             {ex.rpe && (
-              <span className="text-sm text-muted-foreground">
+              <span className="text-[11px] text-muted-foreground">
                 RPE {Math.round(ex.rpe)}
               </span>
             )}
           </div>
           <div className="grid grid-cols-3 gap-4 text-center">
             <div>
-              <p className="text-xs text-muted-foreground">重量</p>
-              <p className="text-2xl font-bold">
-                {Math.round(ex.weight * 2) / 2}kg
+              <p className="text-[11px] text-muted-foreground mb-1">重量</p>
+              <p className="text-[22px] font-bold tracking-tight">
+                {Math.round(ex.weight * 2) / 2}
+                <span className="text-xs font-medium text-muted-foreground ml-0.5">kg</span>
               </p>
             </div>
             <div>
-              <p className="text-xs text-muted-foreground">回数</p>
-              <p className="text-2xl font-bold">{ex.reps}回</p>
+              <p className="text-[11px] text-muted-foreground mb-1">回数</p>
+              <p className="text-[22px] font-bold tracking-tight">
+                {ex.reps}
+                <span className="text-xs font-medium text-muted-foreground ml-0.5">回</span>
+              </p>
             </div>
             <div>
-              <p className="text-xs text-muted-foreground">セット</p>
-              <p className="text-2xl font-bold">{ex.sets}set</p>
+              <p className="text-[11px] text-muted-foreground mb-1">セット</p>
+              <p className="text-[22px] font-bold tracking-tight">
+                {ex.sets}
+                <span className="text-xs font-medium text-muted-foreground ml-0.5">set</span>
+              </p>
             </div>
           </div>
           {ex.e1rm && (
-            <p className="text-xs text-muted-foreground text-center mt-2">
+            <p className="text-[12px] text-muted-foreground text-center">
               推定1RM: {Math.round(ex.e1rm * 10) / 10}kg
             </p>
           )}
@@ -895,62 +908,67 @@ export default function ProgramPage() {
   };
 
   return (
-    <div className="min-h-screen pb-24">
+    <div className="min-h-screen pb-28">
       {/* Header */}
-      <header className="sticky top-0 z-50 bg-background/80 backdrop-blur-lg border-b border-border">
-        <div className="max-w-lg mx-auto px-4 h-16 flex items-center justify-between">
-          <div className="flex items-center gap-3">
+      <header className="sticky top-0 z-40 glass border-b border-border/60 pt-safe">
+        <div className="max-w-lg mx-auto px-4 h-14 flex items-center justify-between">
+          <div className="flex items-center gap-1.5">
             <Link href="/dashboard">
-              <Button variant="ghost" size="icon">
-                <ArrowLeft className="w-5 h-5" />
+              <Button variant="ghost" size="icon" className="w-9 h-9 rounded-full text-muted-foreground">
+                <ArrowLeft className="w-[18px] h-[18px]" />
               </Button>
             </Link>
-            <h1 className="font-bold text-lg">トレーニングプログラム</h1>
+            <h1 className="font-semibold text-[17px] tracking-tight">トレーニングプログラム</h1>
           </div>
           <Button
             variant="ghost"
             size="icon"
+            className="w-9 h-9 rounded-full text-muted-foreground"
             onClick={handleExportExcel}
             title="Excelで出力"
           >
-            <Download className="w-5 h-5" />
+            <Download className="w-[18px] h-[18px]" />
           </Button>
         </div>
       </header>
 
-      <main className="max-w-lg mx-auto px-4 py-6 space-y-6">
+      <main className="max-w-lg mx-auto px-4 pt-5 space-y-6">
         {/* Week Navigation */}
         <div className="flex items-center justify-between">
           <Button
             variant="ghost"
             size="icon"
+            className="w-9 h-9 rounded-full text-muted-foreground"
             onClick={() => setSelectedWeek(Math.max(1, selectedWeek - 1))}
             disabled={selectedWeek === 1}
           >
-            <ChevronLeft className="w-6 h-6" />
+            <ChevronLeft className="w-5 h-5" />
           </Button>
-          <div className="text-center">
-            <h2 className="text-2xl font-bold neon-text">
+          <div className="text-center space-y-1.5">
+            <h2 className="text-[22px] font-bold tracking-tight">
               Week {selectedWeek}
             </h2>
-            {selectedWeek === profile!.current_week && (
-              <Badge variant="outline" className="mt-1 neon-border">
-                現在の週
-              </Badge>
-            )}
-            {[4, 8, 12].includes(selectedWeek) && (
-              <Badge className="mt-1 ml-2 bg-orange-500/20 text-orange-400 border-orange-500/30">
-                {selectedWeek === 12 ? "最終テスト" : "ディロード"}
-              </Badge>
-            )}
+            <div className="flex items-center justify-center gap-1.5">
+              {selectedWeek === profile!.current_week && (
+                <span className="text-[11px] px-2.5 py-0.5 rounded-full bg-primary/15 text-primary font-medium">
+                  現在の週
+                </span>
+              )}
+              {[4, 8, 12].includes(selectedWeek) && (
+                <span className="text-[11px] px-2.5 py-0.5 rounded-full bg-orange-500/15 text-orange-400 font-medium">
+                  {selectedWeek === 12 ? "最終テスト" : "ディロード"}
+                </span>
+              )}
+            </div>
           </div>
           <Button
             variant="ghost"
             size="icon"
+            className="w-9 h-9 rounded-full text-muted-foreground"
             onClick={() => setSelectedWeek(Math.min(12, selectedWeek + 1))}
             disabled={selectedWeek === 12}
           >
-            <ChevronRight className="w-6 h-6" />
+            <ChevronRight className="w-5 h-5" />
           </Button>
         </div>
 
@@ -983,7 +1001,7 @@ export default function ProgramPage() {
                 value={String(dayData.day)}
                 className="space-y-4 mt-4"
               >
-                <h3 className="text-lg font-semibold text-muted-foreground">
+                <h3 className="text-[13px] font-semibold text-muted-foreground tracking-tight">
                   {dayLabels[dayIndex]}
                 </h3>
 
@@ -1019,8 +1037,8 @@ export default function ProgramPage() {
 
                 {/* Accessories */}
                 <div>
-                  <h4 className="text-sm font-semibold text-muted-foreground mb-3 flex items-center gap-2">
-                    <Dumbbell className="w-4 h-4" />
+                  <h4 className="text-[13px] font-semibold text-muted-foreground mb-3 flex items-center gap-1.5 tracking-tight">
+                    <Dumbbell className="w-3.5 h-3.5" />
                     補助種目（
                     {dayLabels[dayIndex].includes("月")
                       ? "月曜"
@@ -1042,15 +1060,15 @@ export default function ProgramPage() {
                       .map((acc, i) => (
                         <div
                           key={i}
-                          className="flex items-center justify-between p-3 rounded-lg bg-secondary/50"
+                          className="flex items-center justify-between rounded-xl bg-secondary/50 px-3.5 py-3"
                         >
                           <div>
-                            <p className="text-sm font-medium">{acc.name}</p>
-                            <p className="text-xs text-muted-foreground">
+                            <p className="text-[14px] font-medium">{acc.name}</p>
+                            <p className="text-xs text-muted-foreground mt-0.5">
                               {acc.category}
                             </p>
                           </div>
-                          <p className="text-sm">
+                          <p className="text-[14px] text-muted-foreground tabular-nums">
                             {acc.reps}回 x {acc.sets}set
                           </p>
                         </div>
@@ -1065,18 +1083,18 @@ export default function ProgramPage() {
                       handleSaveTraining(selectedWeek, dayData.day)
                     }
                     disabled={saving}
-                    className="w-full h-16 text-lg font-bold neon-glow-pulse"
+                    className="w-full h-14 text-[16px]"
                   >
                     {saving ? (
                       "保存中..."
                     ) : saved ? (
                       <>
-                        <Check className="w-6 h-6 mr-2" />
+                        <Check className="w-5 h-5 mr-2" />
                         保存しました！
                       </>
                     ) : (
                       <>
-                        <Save className="w-6 h-6 mr-2" />
+                        <Save className="w-5 h-5 mr-2" />
                         トレーニング記録を保存
                       </>
                     )}
@@ -1085,11 +1103,11 @@ export default function ProgramPage() {
 
                 {/* 完了済みセッション: 編集ボタン / 保存・キャンセルボタン */}
                 {completed && !isEditing && (
-                  <div className="flex items-center justify-center gap-3 py-4">
-                    <Badge className="bg-emerald-500/20 text-emerald-400 border-emerald-500/30 text-base px-4 py-2">
-                      <Check className="w-4 h-4 mr-2" />
+                  <div className="flex items-center justify-center gap-3 py-2">
+                    <span className="inline-flex items-center text-[13px] font-medium px-3 py-1.5 rounded-full bg-emerald-500/15 text-emerald-400">
+                      <Check className="w-4 h-4 mr-1.5" />
                       完了済み
-                    </Badge>
+                    </span>
                     <Button
                       variant="outline"
                       size="sm"
@@ -1102,11 +1120,11 @@ export default function ProgramPage() {
                 )}
 
                 {completed && isEditing && (
-                  <div className="space-y-3 py-2">
+                  <div className="space-y-2.5 py-1">
                     <Button
                       onClick={() => handleSaveEdit(selectedWeek, dayData.day)}
                       disabled={savingEdit}
-                      className="w-full h-14 text-lg font-bold neon-glow"
+                      className="w-full h-14 text-[16px]"
                     >
                       {savingEdit ? (
                         "保存中..."
@@ -1125,7 +1143,7 @@ export default function ProgramPage() {
                     <Button
                       variant="ghost"
                       onClick={handleCancelEdit}
-                      className="w-full"
+                      className="w-full text-muted-foreground"
                     >
                       <X className="w-4 h-4 mr-1" />
                       キャンセル
@@ -1137,6 +1155,8 @@ export default function ProgramPage() {
           })}
         </Tabs>
       </main>
+
+      <TabBar />
     </div>
   );
 }

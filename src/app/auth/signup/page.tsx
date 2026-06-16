@@ -7,8 +7,7 @@ import { createClient } from "@/lib/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Dumbbell } from "lucide-react";
+import { Dumbbell, CheckCircle2 } from "lucide-react";
 
 export default function SignUpPage() {
   const [email, setEmail] = useState("");
@@ -52,112 +51,104 @@ export default function SignUpPage() {
 
   if (success) {
     return (
-      <div className="min-h-screen flex items-center justify-center px-4">
-        <Card className="w-full max-w-md neon-border">
-          <CardContent className="pt-8 pb-8 text-center space-y-4">
-            <div className="flex justify-center">
-              <div className="p-3 rounded-2xl bg-primary/10 neon-glow">
-                <Dumbbell className="w-10 h-10 text-primary" />
-              </div>
-            </div>
-            <h2 className="text-2xl font-bold">登録完了！</h2>
-            <p className="text-muted-foreground">
-              確認メールを送信しました。<br />
-              メール内のリンクをクリックして登録を完了してください。
-            </p>
-            <Button
-              onClick={() => router.push("/auth/login")}
-              className="w-full h-14 text-lg font-bold neon-glow mt-4"
-            >
-              ログインページへ
-            </Button>
-          </CardContent>
-        </Card>
+      <div className="min-h-screen flex flex-col justify-center px-6 py-12">
+        <div className="w-full max-w-sm mx-auto text-center">
+          <div className="w-[68px] h-[68px] rounded-[20px] bg-gradient-to-b from-emerald-500 to-emerald-600 flex items-center justify-center shadow-lg shadow-emerald-500/25 mb-6 mx-auto">
+            <CheckCircle2 className="w-9 h-9 text-white" strokeWidth={2.2} />
+          </div>
+          <h2 className="large-title">登録完了</h2>
+          <p className="text-muted-foreground mt-3 text-[15px] leading-relaxed">
+            確認メールを送信しました。
+            <br />
+            メール内のリンクをクリックして
+            <br />
+            登録を完了してください。
+          </p>
+          <Button
+            onClick={() => router.push("/auth/login")}
+            className="w-full h-12 text-[17px] mt-8"
+          >
+            ログインページへ
+          </Button>
+        </div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center px-4">
-      <div className="w-full max-w-md space-y-8">
-        <div className="text-center space-y-2">
-          <div className="flex justify-center">
-            <div className="p-3 rounded-2xl bg-primary/10 neon-glow">
-              <Dumbbell className="w-10 h-10 text-primary" />
-            </div>
+    <div className="min-h-screen flex flex-col justify-center px-6 py-12">
+      <div className="w-full max-w-sm mx-auto">
+        <div className="flex flex-col items-center text-center mb-10">
+          <div className="w-[68px] h-[68px] rounded-[20px] bg-gradient-to-b from-primary to-[oklch(0.54_0.17_256)] flex items-center justify-center shadow-lg shadow-primary/25 mb-5">
+            <Dumbbell className="w-9 h-9 text-white" strokeWidth={2.2} />
           </div>
-          <h1 className="text-3xl font-bold neon-text">
-            BENCH PRESS
-          </h1>
-          <p className="text-muted-foreground text-lg">100kg Program</p>
+          <h1 className="large-title">アカウント作成</h1>
+          <p className="text-muted-foreground mt-1.5 text-[15px]">100kg Program を始めよう</p>
         </div>
 
-        <Card className="neon-border">
-          <CardHeader>
-            <CardTitle className="text-center text-xl">新規登録</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <form onSubmit={handleSignUp} className="space-y-5">
-              <div className="space-y-2">
-                <Label htmlFor="displayName">表示名</Label>
-                <Input
-                  id="displayName"
-                  type="text"
-                  placeholder="あなたの名前"
-                  value={displayName}
-                  onChange={(e) => setDisplayName(e.target.value)}
-                  required
-                  className="h-12 text-base"
-                />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="email">メールアドレス</Label>
-                <Input
-                  id="email"
-                  type="email"
-                  placeholder="your@email.com"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  required
-                  className="h-12 text-base"
-                />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="password">パスワード（6文字以上）</Label>
-                <Input
-                  id="password"
-                  type="password"
-                  placeholder="パスワードを入力"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  required
-                  className="h-12 text-base"
-                />
-              </div>
+        <form onSubmit={handleSignUp} className="space-y-4">
+          <div className="space-y-1.5">
+            <Label htmlFor="displayName" className="text-xs font-medium text-muted-foreground px-1">
+              表示名
+            </Label>
+            <Input
+              id="displayName"
+              type="text"
+              placeholder="あなたの名前"
+              value={displayName}
+              onChange={(e) => setDisplayName(e.target.value)}
+              required
+              className="h-12 text-base"
+            />
+          </div>
+          <div className="space-y-1.5">
+            <Label htmlFor="email" className="text-xs font-medium text-muted-foreground px-1">
+              メールアドレス
+            </Label>
+            <Input
+              id="email"
+              type="email"
+              placeholder="your@email.com"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              required
+              className="h-12 text-base"
+            />
+          </div>
+          <div className="space-y-1.5">
+            <Label htmlFor="password" className="text-xs font-medium text-muted-foreground px-1">
+              パスワード（6文字以上）
+            </Label>
+            <Input
+              id="password"
+              type="password"
+              placeholder="パスワードを入力"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              required
+              className="h-12 text-base"
+            />
+          </div>
 
-              {error && (
-                <p className="text-destructive text-sm text-center">{error}</p>
-              )}
+          {error && (
+            <p className="text-destructive text-sm text-center pt-1">{error}</p>
+          )}
 
-              <Button
-                type="submit"
-                className="w-full h-14 text-lg font-bold neon-glow"
-                disabled={loading}
-              >
-                {loading ? "登録中..." : "アカウント作成"}
-              </Button>
-            </form>
+          <Button
+            type="submit"
+            className="w-full h-12 text-[17px] mt-2"
+            disabled={loading}
+          >
+            {loading ? "登録中..." : "アカウント作成"}
+          </Button>
+        </form>
 
-            <div className="mt-6 text-center">
-              <p className="text-muted-foreground">
-                すでにアカウントをお持ちの方は{" "}
-                <Link href="/auth/login" className="text-primary hover:underline font-medium">
-                  ログイン
-                </Link>
-              </p>
-            </div>
-          </CardContent>
-        </Card>
+        <p className="mt-8 text-center text-[15px] text-muted-foreground">
+          すでにアカウントをお持ちの方は{" "}
+          <Link href="/auth/login" className="text-primary font-medium">
+            ログイン
+          </Link>
+        </p>
       </div>
     </div>
   );
