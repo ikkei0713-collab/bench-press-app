@@ -1,8 +1,9 @@
 "use client";
 
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
+import { AuthError, isAuthApiError } from "@supabase/supabase-js";
 import { createClient } from "@/lib/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -10,13 +11,33 @@ import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Dumbbell } from "lucide-react";
 
+function describeAuthError(error: AuthError): string {
+  // 認証サーバーに到達できていない（プロジェクト停止・ネットワーク断など）。
+  // 資格情報の誤りとして表示すると原因調査を大きく誤らせる。
+  if (!isAuthApiError(error)) {
+    return "認証サーバーに接続できませんでした。時間をおいて再度お試しください。";
+  }
+
+  switch (error.code) {
+    case "invalid_credentials":
+      return "メールアドレスまたはパスワードが間違っています";
+    case "email_not_confirmed":
+      return "メールアドレスが未確認です。確認メールのリンクを開いてください。";
+    case "over_request_rate_limit":
+    case "over_email_send_rate_limit":
+      return "試行回数が多すぎます。しばらく待ってから再度お試しください。";
+    default:
+      return `ログインに失敗しました（${error.code ?? error.status}）`;
+  }
+}
+
 export default function LoginPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
   const router = useRouter();
-  const supabase = createClient();
+  const supabase = useMemo(() => createClient(), []);
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -29,7 +50,7 @@ export default function LoginPage() {
     });
 
     if (error) {
-      setError("メールアドレスまたはパスワードが間違っています");
+      setError(describeAuthError(error));
       setLoading(false);
     } else {
       router.push("/dashboard");

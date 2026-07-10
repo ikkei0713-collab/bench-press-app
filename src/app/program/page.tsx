@@ -23,7 +23,6 @@ import {
   Pencil,
   X,
 } from "lucide-react";
-import * as XLSX from "xlsx";
 
 interface UserProfile {
   id: string;
@@ -470,8 +469,11 @@ export default function ProgramPage() {
     setSavingEdit(false);
   };
 
-  const handleExportExcel = () => {
+  const handleExportExcel = async () => {
     if (!program || program.length === 0) return;
+
+    // xlsx は 200KB 超あるので、書き出しを押されるまで読み込まない
+    const XLSX = await import("xlsx");
 
     const rows: Record<string, string | number>[] = [];
 
